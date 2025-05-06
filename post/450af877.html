@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.staticfile.org/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.staticfile.org/fancyapps-ui/5.0.36/fancybox/fancybox.css" integrity="sha256-zM8WXtG4eUn7dKKNMTuoWZub++VnSfaOpA/8PJfvTBo=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"byronliubing.gitee.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.23.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="博客从去年初建到现在也已经有一年多了，去年的任务没有完成，该有的总结和分享都没有梳理，拖延症晚期还有值得抢救的机会。这两天抽空重新整理了一下博客，并将其更新，在这里记录下建站细节。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="hexo建站说明">
+<meta property="og:url" content="https://byronliubing.gitee.io/post/450af877">
+<meta property="og:site_name" content="Byron Liu">
+<meta property="og:description" content="博客从去年初建到现在也已经有一年多了，去年的任务没有完成，该有的总结和分享都没有梳理，拖延症晚期还有值得抢救的机会。这两天抽空重新整理了一下博客，并将其更新，在这里记录下建站细节。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/450af877/style.PNG">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/450af877/custom_config.PNG">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/450af877/package.PNG">
+<meta property="article:published_time" content="2022-05-21T15:37:10.000Z">
+<meta property="article:modified_time" content="2025-03-18T14:59:47.508Z">
+<meta property="article:author" content="Liu Bing">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://byronliubing.gitee.io/post/450af877/style.PNG">
+
+
+<link rel="canonical" href="https://byronliubing.gitee.io/post/450af877.html">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://byronliubing.gitee.io/post/450af877","path":"post/450af877.html","title":"hexo建站说明"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>hexo建站说明 | Byron Liu</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdn.staticfile.org/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+  <script src="https://cdn.staticfile.org/fancyapps-ui/5.0.36/fancybox/fancybox.umd.js" integrity="sha256-hiUEBwFEpLF6DlB8sGXlKo4kPZ46Ui4qGpd0vrVkOm4=" crossorigin="anonymous" defer></script>
+  <script src="https://cdn.staticfile.org/pangu/4.0.7/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+  <script src="/js/third-party/fancybox.js" defer></script>
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Byron Liu</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">1</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">10</span></a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81nodejs%E7%9A%84%E5%AE%89%E8%A3%85"><span class="nav-number">1.</span> <span class="nav-text">一、nodejs的安装</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81hexo%E7%9A%84%E5%AE%89%E8%A3%85"><span class="nav-number">2.</span> <span class="nav-text">二、hexo的安装</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#hexo%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">2.1.</span> <span class="nav-text">hexo的初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hexo%E7%9A%84%E9%85%8D%E7%BD%AE"><span class="nav-number">2.2.</span> <span class="nav-text">hexo的配置</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E6%9B%B4%E6%8D%A2NexT%E4%B8%BB%E9%A2%98"><span class="nav-number">3.</span> <span class="nav-text">三、更换NexT主题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81NexT%E7%9A%84%E9%85%8D%E7%BD%AE"><span class="nav-number">4.</span> <span class="nav-text">四、NexT的配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E9%93%BE%E6%8E%A5%E4%BF%AE%E6%94%B9"><span class="nav-number">4.1.</span> <span class="nav-text">文件链接修改</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%92%E5%85%A5%E5%9B%BE%E7%89%87"><span class="nav-number">4.2.</span> <span class="nav-text">插入图片</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%BB%E6%8E%89%E9%A1%B6%E9%83%A8%E9%BB%91%E7%BA%BF"><span class="nav-number">4.3.</span> <span class="nav-text">去掉顶部黑线</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%85%E8%AF%BB%E6%97%B6%E9%97%B4%E7%BB%9F%E8%AE%A1"><span class="nav-number">4.4.</span> <span class="nav-text">阅读时间统计</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8A%E6%97%A5%E8%AF%97%E8%AF%8D"><span class="nav-number">4.5.</span> <span class="nav-text">今日诗词</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%83%A8%E7%BD%B2%E8%87%B3github"><span class="nav-number">4.6.</span> <span class="nav-text">部署至github</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E6%BA%90%E7%A0%81%E4%BF%9D%E5%AD%98"><span class="nav-number">5.</span> <span class="nav-text">五、源码保存</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E8%B0%83%E8%AF%95%E8%AE%B0%E5%BD%95"><span class="nav-number">6.</span> <span class="nav-text">六、调试记录</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9cdn"><span class="nav-number">6.1.</span> <span class="nav-text">修改cdn</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Liu Bing</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">10</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://byronliubing.gitee.io/post/450af877">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Bing">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Byron Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="hexo建站说明 | Byron Liu">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          hexo建站说明
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-05-21 23:37:10" itemprop="dateCreated datePublished" datetime="2022-05-21T23:37:10+08:00">2022-05-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-03-18 22:59:47" itemprop="dateModified" datetime="2025-03-18T22:59:47+08:00">2025-03-18</time>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>7 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>博客从去年初建到现在也已经有一年多了，去年的任务没有完成，该有的总结和分享都没有梳理，拖延症晚期还有值得抢救的机会。这两天抽空重新整理了一下<a href="http://byronliubing.gitee.io/">博客</a>，并将其更新，在这里记录下建站细节。</p>
+<span id="more"></span>
+
+<h1 id="一、nodejs的安装"><a href="#一、nodejs的安装" class="headerlink" title="一、nodejs的安装"></a>一、nodejs的安装</h1><p>对于前端小白来说，我并不了解其中细节，node和npm的软件包按照官网安装即可。例如centos系统上直接使用dnf安装：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@Byron ~]# dnf install nodejs npm</span><br></pre></td></tr></table></figure>
+<p>在mac上可直接使用brew安装。</p>
+<p>其实还有一种方式，直接安装nodejs即可，去<a target="_blank" rel="noopener" href="http://nodejs.cn/download/">Node.js官网</a>下载最新版本的nodejs并安装，会自动安装好node和npm软件，其实npm是随同Node.js一起安装的包管理工具。<br>不管以什么方式安装，最终以能查看到版本表示安装成功。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@Byron ~]# node -v</span><br><span class="line">v16.15.0</span><br><span class="line">[root@Byron ~]# npm -v</span><br><span class="line">8.10.0</span><br><span class="line">[root@Byron ~]#</span><br></pre></td></tr></table></figure>
+
+<p>npm常用命令</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">npm init	#会引导你创建一个package.json文件，包括名称、版本、作者这些信息等</span><br><span class="line">npm install &lt;name&gt; -g		#将包安装到全局环境中</span><br><span class="line">npm install &lt;name&gt;		#安装nodejs的依赖包到本地项目中</span><br><span class="line">npm install &lt;name&gt; --save	#安装的同时，将信息写入package.json中</span><br><span class="line">npm update &lt;name&gt;		#更新本地项目依赖包</span><br><span class="line">npm update &lt;name&gt; -g	#更新全局环境依赖包</span><br><span class="line">npm uninstall &lt;name&gt;	#卸载包</span><br></pre></td></tr></table></figure>
+
+<p>在此次建站中，安装了以下几种包：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@Byron ~]# npm -g ls</span><br><span class="line">/usr/local/lib</span><br><span class="line">├── corepack@0.10.0</span><br><span class="line">├── hexo-cli@4.3.0</span><br><span class="line">├── n@8.2.0</span><br><span class="line">└── npm@8.10.0</span><br><span class="line"></span><br><span class="line">[root@Byron ~]#</span><br></pre></td></tr></table></figure>
+
+<h1 id="二、hexo的安装"><a href="#二、hexo的安装" class="headerlink" title="二、hexo的安装"></a>二、hexo的安装</h1><p>hexo 的安装比较简单，直接按照<a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/">hexo官网</a>的说明步骤安装即可。</p>
+<p>由于npm的默认源在国外经常连接超时，所以有必要时可以更改为国内镜像源，例如淘宝源：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm config set registry https://registry.npm.taobao.org</span><br></pre></td></tr></table></figure>
+
+<p>接下来就是使用npm命令安装hexo了：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g hexo-cli</span><br></pre></td></tr></table></figure>
+
+<p>hexo常用命令</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">hexo clean		#清除缓存，可简写hexo c</span><br><span class="line">hexo generate		#建立静态页面，可简写hexo g</span><br><span class="line">hexo deploy		#部署至托管，可简写hexo d</span><br><span class="line">hexo server		#启动本地服务，用于本地调试，可简写hexo s</span><br><span class="line">hexo new [opt] &lt;name&gt;	#新建一篇name的blog，可简写hexo n</span><br></pre></td></tr></table></figure>
+
+<h2 id="hexo的初始化"><a href="#hexo的初始化" class="headerlink" title="hexo的初始化"></a>hexo的初始化</h2><p>成功安装好hexo后，找一个合适的位置存放项目文件，初始化新建一个名为byronliubing的项目：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@Byron home]# hexo init byronliubing</span><br><span class="line">INFO  Cloning hexo-starter https://github.com/hexojs/hexo-starter.git</span><br><span class="line">INFO  Install dependencies</span><br><span class="line">warning hexo-renderer-stylus &gt; stylus &gt; css &gt; source-map-resolve@0.6.0: See https://github.com/lydell/source-map-resolve#deprecated</span><br><span class="line">warning Your current version of Yarn is out of date. The latest version is &quot;1.22.19&quot;, while you&#x27;re on &quot;1.22.15&quot;.</span><br><span class="line">INFO  Start blogging with Hexo!</span><br><span class="line">[root@Byron home]#</span><br></pre></td></tr></table></figure>
+<p>这这样就新生成了一个名为 byronliubing 的文件夹，里边存放一些初始化的 hexo 博客文件(项目所需的依赖包会根据package.json自动下载)。可以在本地打开查看：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">[root@Byron byronliubing]# ll</span><br><span class="line">total 88</span><br><span class="line">-rw-r--r--.   1 root root     0 May 22 00:13 _config.landscape.yml</span><br><span class="line">-rw-r--r--.   1 root root  2441 May 22 00:13 _config.yml</span><br><span class="line">drwxr-xr-x. 220 root root  8192 May 22 00:14 node_modules</span><br><span class="line">-rw-r--r--.   1 root root   615 May 22 00:13 package.json</span><br><span class="line">drwxr-xr-x.   2 root root    52 May 22 00:13 scaffolds</span><br><span class="line">drwxr-xr-x.   3 root root    20 May 22 00:13 source</span><br><span class="line">drwxr-xr-x.   2 root root    22 May 22 00:13 themes</span><br><span class="line">-rw-r--r--.   1 root root 68464 May 22 00:14 yarn.lock</span><br><span class="line">[root@Byron byronliubing]#</span><br><span class="line">[root@Byron byronliubing]# npm ls</span><br><span class="line">hexo-site@0.0.0 /home/byronliubing</span><br><span class="line">├── hexo-generator-archive@1.0.0</span><br><span class="line">├── hexo-generator-category@1.0.0</span><br><span class="line">├── hexo-generator-index@2.0.0</span><br><span class="line">├── hexo-generator-tag@1.0.0</span><br><span class="line">├── hexo-renderer-ejs@2.0.0</span><br><span class="line">├── hexo-renderer-marked@5.0.0</span><br><span class="line">├── hexo-renderer-stylus@2.1.0</span><br><span class="line">├── hexo-server@3.0.0</span><br><span class="line">├── hexo-theme-landscape@0.0.3</span><br><span class="line">└── hexo@6.2.0</span><br><span class="line"></span><br><span class="line">[root@Byron byronliubing]#</span><br></pre></td></tr></table></figure>
+<p>初始化好的博客默认主题为landscape。使用hexo s可在本地生成一个博客系统，可以根据提示打开浏览器查看（默认在 <a target="_blank" rel="noopener" href="http://localhost:4000/">http://localhost:4000/</a> )。</p>
+<h2 id="hexo的配置"><a href="#hexo的配置" class="headerlink" title="hexo的配置"></a>hexo的配置</h2><p>生成的hexo主目录下有一个名为_config.yml的文件，需要修改一些参数，具体细节可以参考<a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/docs/configuration">官方文档</a>，具体修改项会穿插在后文中讲述。</p>
+<h1 id="三、更换NexT主题"><a href="#三、更换NexT主题" class="headerlink" title="三、更换NexT主题"></a>三、更换NexT主题</h1><p>我使用的主题是<a target="_blank" rel="noopener" href="https://theme-next.js.org/">NexT</a>，安装步骤参考<a target="_blank" rel="noopener" href="https://theme-next.js.org/docs/getting-started/">官方说明文档</a>，安装最新的一个 release 版本：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm uninstall hexo-theme-landscape</span><br><span class="line">npm install hexo-theme-next</span><br></pre></td></tr></table></figure>
+<p>同时修改hexo的配置文件中主题项为next即可</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">theme: next</span><br></pre></td></tr></table></figure>
+<h1 id="四、NexT的配置"><a href="#四、NexT的配置" class="headerlink" title="四、NexT的配置"></a>四、NexT的配置</h1><p>NexT 主题的配置就是找到位于node_modules&#x2F;hexo-theme-next&#x2F;文件夹内的 _config.yml文件，为了保持源码的纯洁，也是为了配置与数据的分离，可以将 _config.yml复制一份到hexo的目录重命名为 _config.next.yml( _config.&lt;theme&gt;.yml)。</p>
+<h2 id="文件链接修改"><a href="#文件链接修改" class="headerlink" title="文件链接修改"></a>文件链接修改</h2><p>NexT主题的文章链接默认的生成规则是：:year&#x2F;:month&#x2F;:day&#x2F;:title，是按照年、月、日、标题来生成的。如果文章标题是中文的话，URL链接是也会是中文。复制后的链接也会是一长串，不利于阅读也不简洁。这边采用<a target="_blank" rel="noopener" href="https://github.com/Rozbo/hexo-abbrlink">hexo-abbrlink</a>插件，生成唯一不变的URL链接。<br>具体修改项参考项目说明即可。安装插件方式如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-abbrlink --save</span><br></pre></td></tr></table></figure>
+
+<h2 id="插入图片"><a href="#插入图片" class="headerlink" title="插入图片"></a>插入图片</h2><p>使用hexo-asset-image插件，该插件的工作原理是在同级目录下新建一个同名文件夹，将文中所需的图片放于其中，使用相对路径来索引。<br>在采用hexo-abbrlink插件后，会与之产生冲突。所以更换插件来源<a target="_blank" rel="noopener" href="https://github.com/fulsun/hexo-asset-image-master">hexo-asset-image-master</a>。安装插件方式如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install https://github.com/fulsun/hexo-asset-image-master.git --save</span><br></pre></td></tr></table></figure>
+
+<h2 id="去掉顶部黑线"><a href="#去掉顶部黑线" class="headerlink" title="去掉顶部黑线"></a>去掉顶部黑线</h2><p>在hexo&#x2F;source&#x2F;_data&#x2F;styles.styl文件中加入下面样式，如果文件不存在，依次创建即可。</p>
+<p><img src="/post/450af877/style.PNG" alt="配置说明"></p>
+<h2 id="阅读时间统计"><a href="#阅读时间统计" class="headerlink" title="阅读时间统计"></a>阅读时间统计</h2><p>给博客文章添加一下字数统计及阅读时间统计，虽然统计不太准。安装hexo-word-counter插件。<br>对应的_config.next.yml中修改：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Post wordcount display settings</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Dependencies: https://github.com/next-theme/hexo-word-counter</span></span><br><span class="line">symbols_count_time:</span><br><span class="line">  separated_meta: true</span><br><span class="line">  item_text_total: false</span><br></pre></td></tr></table></figure>
+
+<h2 id="今日诗词"><a href="#今日诗词" class="headerlink" title="今日诗词"></a>今日诗词</h2><p>给个人博客添加一些人文气息，文末调用今日诗词的 API 根据访问的时间地点等智能推荐一句诗词，参考官方提供的<a target="_blank" rel="noopener" href="https://www.jinrishici.com/doc/#json-fast">接口文档</a>，使用高级安装代码以显示更多信息。<br>修改_config.next.yml：</p>
+<p><img src="/post/450af877/custom_config.PNG" alt="custom_config"></p>
+<p>然后修改source&#x2F;_data&#x2F;post-body-end.njk文件，如果文件不存在，依次创建即可。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;script src=<span class="string">&quot;https://sdk.jinrishici.com/v2/browser/jinrishici.js&quot;</span> charset=<span class="string">&quot;utf-8&quot;</span>&gt;&lt;/script&gt;</span><br><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">  jinrishici.<span class="title function_">load</span>(<span class="function">(<span class="params">result</span>) =&gt;</span> &#123;</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">    <span class="keyword">let</span> jrsc = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;jrsc&#x27;</span>);</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">    <span class="keyword">const</span> data = result.<span class="property">data</span>;</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">    <span class="keyword">let</span> author = data.<span class="property">origin</span>.<span class="property">author</span>;</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">    <span class="keyword">let</span> title = <span class="string">&#x27;《&#x27;</span> + data.<span class="property">origin</span>.<span class="property">title</span> + <span class="string">&#x27;》&#x27;</span>;</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">    <span class="keyword">let</span> content = data.<span class="property">content</span>.<span class="title function_">substr</span>(<span class="number">0</span>, data.<span class="property">content</span>.<span class="property">length</span> - <span class="number">1</span>);</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">    <span class="keyword">let</span> dynasty = data.<span class="property">origin</span>.<span class="property">dynasty</span>.<span class="title function_">substr</span>(<span class="number">0</span>, data.<span class="property">origin</span>.<span class="property">dynasty</span>.<span class="property">length</span> - <span class="number">1</span>);</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">    jrsc.<span class="property">innerText</span> = content + <span class="string">&#x27; @ &#x27;</span> + dynasty + <span class="string">&#x27;·&#x27;</span> + author + title;</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">  &#125;);</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;text-align: center&quot;</span>&gt;</span><span class="tag">&lt;<span class="name">span</span> <span class="attr">id</span>=<span class="string">&quot;jrsc&quot;</span> &gt;</span>正在加载今日诗词....<span class="tag">&lt;/<span class="name">span</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
+
+<h2 id="部署至github"><a href="#部署至github" class="headerlink" title="部署至github"></a>部署至github</h2><p>修改hexo的配置文件_config.yml，填充deploy属性：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Deployment</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment"># Docs: https://hexo.io/docs/one-command-deployment</span></span></span><br><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line"><span class="meta prompt_">  #</span><span class="language-bash">repo: git@gitee.com:byronliubing/byronliubing.git</span></span><br><span class="line">  repo: git@github.com:byronliubing/byronliubing.git</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
+<p>然后本地调试完就可以使用hexo d发布了，这边提供一个小技巧，将发布命令修改后写进package.json中，这样下次就可以一次性执行完相关命令(npm run release)：</p>
+<p><img src="/post/450af877/package.PNG" alt="package设置"></p>
+<h1 id="五、源码保存"><a href="#五、源码保存" class="headerlink" title="五、源码保存"></a>五、源码保存</h1><p>可以将hexo工程源码在github上建立一个source的分支，master分支用于发布博客。</p>
+<h1 id="六、调试记录"><a href="#六、调试记录" class="headerlink" title="六、调试记录"></a>六、调试记录</h1><h2 id="修改cdn"><a href="#修改cdn" class="headerlink" title="修改cdn"></a>修改cdn</h2><p>NexT 默认的 cdn 提供商包括 jsdelivr、unpkg、cdnjs，但是这些服务在国内访问速度都较慢，无法为用户加速反而使访问速度大打折扣，使得用户体验不佳，在互联网上搜寻多个国内的镜像均有各种问题，最终我选取了七彩云的 cdnjs 镜像服务，NexT 中的设置如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">---------------------------------------------------------------</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">CDN Settings</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">See: https://theme-next.js.org/docs/advanced-settings/vendors</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">---------------------------------------------------------------</span></span><br><span class="line"></span><br><span class="line">vendors:</span><br><span class="line"><span class="meta prompt_">  # </span><span class="language-bash">The CDN provider of NexT internal scripts.</span></span><br><span class="line"><span class="meta prompt_">  # </span><span class="language-bash">Available values: <span class="built_in">local</span> | jsdelivr | unpkg | cdnjs | custom</span></span><br><span class="line"><span class="meta prompt_">  # </span><span class="language-bash">Warning: If you are using the latest master branch of NexT, please <span class="built_in">set</span> `internal: <span class="built_in">local</span>`</span></span><br><span class="line">  internal: local</span><br><span class="line"><span class="meta prompt_">  # </span><span class="language-bash">The default CDN provider of third-party plugins.</span></span><br><span class="line"><span class="meta prompt_">  # </span><span class="language-bash">Available values: <span class="built_in">local</span> | jsdelivr | unpkg | cdnjs | custom</span></span><br><span class="line"><span class="meta prompt_">  # </span><span class="language-bash">Dependencies <span class="keyword">for</span> `plugins: <span class="built_in">local</span>`: https://github.com/next-theme/plugins</span></span><br><span class="line">  plugins: custom</span><br><span class="line"><span class="meta prompt_">  # </span><span class="language-bash">Custom CDN URL</span></span><br><span class="line"><span class="meta prompt_">  # </span><span class="language-bash">For example: https://cdn.staticfile.org/font-awesome/6.1.1/css/all.css</span></span><br><span class="line"><span class="meta prompt_">  # </span><span class="language-bash">custom_cdn_url: https://cdn.jsdelivr.net/npm/<span class="variable">$&#123;npm_name&#125;</span>@<span class="variable">$&#123;version&#125;</span>/<span class="variable">$&#123;minified&#125;</span></span></span><br><span class="line"><span class="meta prompt_">  # </span><span class="language-bash">custom_cdn_url: https://cdnjs.cloudflare.com/ajax/libs/<span class="variable">$&#123;cdnjs_name&#125;</span>/<span class="variable">$&#123;version&#125;</span>/<span class="variable">$&#123;cdnjs_file&#125;</span></span></span><br><span class="line">  custom_cdn_url: https://cdn.staticfile.org/$&#123;cdnjs_name&#125;/$&#123;version&#125;/$&#123;cdnjs_file&#125;</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+<script src="https://sdk.jinrishici.com/v2/browser/jinrishici.js" charset="utf-8"></script>
+<script>
+  jinrishici.load((result) => {
+    let jrsc = document.getElementById('jrsc');
+    const data = result.data;
+    let author = data.origin.author;
+    let title = '《' + data.origin.title + '》';
+    let content = data.content.substr(0, data.content.length - 1);
+    let dynasty = data.origin.dynasty.substr(0, data.origin.dynasty.length - 1);
+    jrsc.innerText = content + ' @ ' + dynasty + '·' + author + title;
+  });
+</script>
+<div style="text-align: center"><span id="jrsc" >正在加载今日诗词....</span></div>
+
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/6fccfea" rel="prev" title="linux下ssh免密登录">
+                  <i class="fa fa-angle-left"></i> linux下ssh免密登录
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/47eca3ac" rel="next" title="cache基本原理">
+                  cache基本原理 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Liu Bing</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">20k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:13</span>
+  </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>

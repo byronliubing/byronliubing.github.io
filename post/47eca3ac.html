@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.staticfile.org/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.staticfile.org/fancyapps-ui/5.0.36/fancybox/fancybox.css" integrity="sha256-zM8WXtG4eUn7dKKNMTuoWZub++VnSfaOpA/8PJfvTBo=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"byronliubing.gitee.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.23.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="我们的程序是运行在RAM中的，RAM就是我们常说的DDR（有DDR3、DDR4、LPDDR4和HBM等等），在本文中统称之为Main Memory。当我们运行一个程序时，通常会从存储介质中将程序load到Main Memory中，然后跳转到text段的指定位置开始执行。而CPU在执行过程中会利用内部的一些通用寄存器来保存数据，例如ARMv8中有31个。我们都知道CPU运行速度快，从内部寄存器读写速">
+<meta property="og:type" content="article">
+<meta property="og:title" content="cache基本原理">
+<meta property="og:url" content="https://byronliubing.gitee.io/post/47eca3ac">
+<meta property="og:site_name" content="Byron Liu">
+<meta property="og:description" content="我们的程序是运行在RAM中的，RAM就是我们常说的DDR（有DDR3、DDR4、LPDDR4和HBM等等），在本文中统称之为Main Memory。当我们运行一个程序时，通常会从存储介质中将程序load到Main Memory中，然后跳转到text段的指定位置开始执行。而CPU在执行过程中会利用内部的一些通用寄存器来保存数据，例如ARMv8中有31个。我们都知道CPU运行速度快，从内部寄存器读写速">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/47eca3ac/cache.PNG">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/47eca3ac/direct%20mapping-16533215656541.PNG">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/47eca3ac/cache%E5%86%85%E9%83%A8%E5%AD%98%E5%82%A8.PNG">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/47eca3ac/cache%20way.PNG">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/47eca3ac/cache%202-way.PNG">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/47eca3ac/PIPT.PNG">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/47eca3ac/VIVT.PNG">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/47eca3ac/error.PNG">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/47eca3ac/write_back.PNG">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/47eca3ac/write_through.PNG">
+<meta property="article:published_time" content="2022-05-23T15:21:53.000Z">
+<meta property="article:modified_time" content="2024-09-12T16:44:52.081Z">
+<meta property="article:author" content="Liu Bing">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://byronliubing.gitee.io/post/47eca3ac/cache.PNG">
+
+
+<link rel="canonical" href="https://byronliubing.gitee.io/post/47eca3ac.html">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://byronliubing.gitee.io/post/47eca3ac","path":"post/47eca3ac.html","title":"cache基本原理"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>cache基本原理 | Byron Liu</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdn.staticfile.org/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+  <script src="https://cdn.staticfile.org/fancyapps-ui/5.0.36/fancybox/fancybox.umd.js" integrity="sha256-hiUEBwFEpLF6DlB8sGXlKo4kPZ46Ui4qGpd0vrVkOm4=" crossorigin="anonymous" defer></script>
+  <script src="https://cdn.staticfile.org/pangu/4.0.7/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+  <script src="/js/third-party/fancybox.js" defer></script>
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Byron Liu</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">1</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">10</span></a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81cache%E7%9A%84%E5%88%86%E5%B8%83"><span class="nav-number">1.</span> <span class="nav-text">一、cache的分布</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Inclusive-and-exclusive-caches"><span class="nav-number">1.1.</span> <span class="nav-text">Inclusive and exclusive caches</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81cache%E7%9A%84%E6%98%A0%E5%B0%84%E6%96%B9%E5%BC%8F"><span class="nav-number">2.</span> <span class="nav-text">二、cache的映射方式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B4%E6%8E%A5%E6%98%A0%E5%B0%84%E7%BC%93%E5%AD%98-Direct-mapped-cache"><span class="nav-number">2.1.</span> <span class="nav-text">直接映射缓存(Direct mapped cache)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#cache%E7%9A%84%E7%AE%A1%E7%90%86%E6%96%B9%E5%BC%8F"><span class="nav-number">2.1.1.</span> <span class="nav-text">cache的管理方式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%A4%E8%B7%AF%E7%BB%84%E7%9B%B8%E8%BF%9E%E7%BC%93%E5%AD%98-Two-way-set-associative-cache"><span class="nav-number">2.2.</span> <span class="nav-text">两路组相连缓存(Two-way set associative cache)</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81address%E7%B1%BB%E5%9E%8B"><span class="nav-number">3.</span> <span class="nav-text">三、address类型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#PIPT"><span class="nav-number">3.1.</span> <span class="nav-text">PIPT</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#VIVT"><span class="nav-number">3.2.</span> <span class="nav-text">VIVT</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#VIPT"><span class="nav-number">3.3.</span> <span class="nav-text">VIPT</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81cache%E7%9A%84%E7%AD%96%E7%95%A5"><span class="nav-number">4.</span> <span class="nav-text">四、cache的策略</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E9%85%8D%E7%AD%96%E7%95%A5"><span class="nav-number">4.1.</span> <span class="nav-text">分配策略</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%B4%E6%96%B0%E7%AD%96%E7%95%A5"><span class="nav-number">4.2.</span> <span class="nav-text">更新策略</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81cache%E7%9A%84%E6%93%8D%E4%BD%9C"><span class="nav-number">5.</span> <span class="nav-text">五、cache的操作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#PoC%E4%B8%8EPoU"><span class="nav-number">5.1.</span> <span class="nav-text">PoC与PoU</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E8%AF%9D%E9%A2%98"><span class="nav-number">5.2.</span> <span class="nav-text">其他话题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%8E%E7%B3%BB%E7%BB%9F%E5%B1%82%E9%9D%A2%E6%9D%A5%E6%89%80%EF%BC%8CCPU%E3%80%81DSP%E3%80%81GPU%E6%88%96DMA%E7%AD%89%EF%BC%8C%E4%BB%96%E4%BB%AC%E4%B9%8B%E9%97%B4cache%E4%B8%80%E8%87%B4%E6%80%A7%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">5.2.1.</span> <span class="nav-text">从系统层面来所，CPU、DSP、GPU或DMA等，他们之间cache一致性的问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%8ECPU%E5%B1%82%E9%9D%A2%E6%9D%A5%E8%AF%B4%EF%BC%8C%E4%BC%9A%E6%9C%89%E5%BE%88%E5%A4%9ACORE%EF%BC%8C%E5%A4%9A%E6%A0%B8%E4%B9%8B%E9%97%B4%E7%9A%84cache%E5%A6%82%E4%BD%95%E5%90%8C%E6%AD%A5"><span class="nav-number">5.2.2.</span> <span class="nav-text">从CPU层面来说，会有很多CORE，多核之间的cache如何同步</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%8E%E4%B8%80%E4%B8%AACORE%E5%86%85%E9%83%A8%E6%9D%A5%E8%AF%B4%EF%BC%8C%E5%AE%83%E6%9C%89ICache%EF%BC%8CDCache%E5%92%8CTLB%EF%BC%8C%E4%BB%96%E4%BB%AC%E4%B9%8B%E9%97%B4cache%E4%BC%9A%E4%B8%8D%E4%BC%9A%E5%AD%98%E5%9C%A8%E4%B8%80%E8%87%B4%E6%80%A7%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">5.2.3.</span> <span class="nav-text">从一个CORE内部来说，它有ICache，DCache和TLB，他们之间cache会不会存在一致性的问题</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Liu Bing</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">10</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://byronliubing.gitee.io/post/47eca3ac">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Bing">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Byron Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="cache基本原理 | Byron Liu">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          cache基本原理
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-05-23 23:21:53" itemprop="dateCreated datePublished" datetime="2022-05-23T23:21:53+08:00">2022-05-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-09-13 00:44:52" itemprop="dateModified" datetime="2024-09-13T00:44:52+08:00">2024-09-13</time>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>4k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>15 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>我们的程序是运行在RAM中的，RAM就是我们常说的DDR（有DDR3、DDR4、LPDDR4和HBM等等），在本文中统称之为Main Memory。当我们运行一个程序时，通常会从存储介质中将程序load到Main Memory中，然后跳转到text段的指定位置开始执行。而CPU在执行过程中会利用内部的一些通用寄存器来保存数据，例如ARMv8中有31个。我们都知道CPU运行速度快，从内部寄存器读写速度快，而从通过总线到Memory中获取得慢，为了缓解这种速度差，提出了一种折中的办法—cache。在CPU内部采用“更快的材料”制成的存储单元，用来提升访问速度，这种存储单元称为Cache Memory。</p>
+<span id="more"></span>
+
+<h1 id="一、cache的分布"><a href="#一、cache的分布" class="headerlink" title="一、cache的分布"></a>一、cache的分布</h1><p>一种技术方案通常在成本与性能中寻找平衡，CPU内部的cache虽然快但是单位造价昂贵，主存便宜但是访问速度慢，所以一般也会限制cache的大小，考量一个CPU的性能也会去参考它的cache大小。同时引入多级cache。多级cache级联，等级越低的造价越贵，等级越高的cache，速度越慢但容量越大，例如在ARMv8平台上：</p>
+<p><img src="/post/47eca3ac/cache.PNG"></p>
+<p>L1 cache分为单独的instruction cache（ICache）和data cache（DCache），L1 cache是CPU私有的，每个CPU都有一个L1 cache。一个cluster 内的所有CPU共享一个L2 cache，L2 cache不区分指令和数据，都可以缓存。所有cluster之间共享L3 cache。L3 cache通过总线和主存相连。</p>
+<ul>
+<li>冯·诺依曼结构，也称普林斯顿结构。它采用指令存储器和数据存储器合并在一起的存储器结构, 其数据总线与指令总线是共用的，所以一般部分ICache与DCache。</li>
+<li>哈佛结构，它采用指令存储器与数据存储器分离的结构，内部有两条不同的总线。在执行时，取指令和取数据可以同时进行。</li>
+</ul>
+<h2 id="Inclusive-and-exclusive-caches"><a href="#Inclusive-and-exclusive-caches" class="headerlink" title="Inclusive and exclusive caches"></a>Inclusive and exclusive caches</h2><p>简单点说，inclusive cache model 表示一份数据可以同时在L1和L2 cache中，当CPU试图从一个地址上load数据时，首先从L1 cache中查找，如果命中的话就直接返回；如果没有命中，那么继续到L2 cache中查找，如果查到了，会将数据传递给L1 cache并保存，数据返回给CPU，此时L1和L2中都存有该数据。</p>
+<p>exclusive cache 表示一个数据不可能同时在不同级的cache中。</p>
+<h1 id="二、cache的映射方式"><a href="#二、cache的映射方式" class="headerlink" title="二、cache的映射方式"></a>二、cache的映射方式</h1><p>cache的容量相当于主存来说是少之又少，所以不可能做到所有数据都缓存到cache中，cache中的数据只能是其中的一小部分，那么以什么样的方式来映射cache和main memory呢，cache控制器通过对地址进行散列，这就牵涉到映射方式了。</p>
+<h2 id="直接映射缓存-Direct-mapped-cache"><a href="#直接映射缓存-Direct-mapped-cache" class="headerlink" title="直接映射缓存(Direct mapped cache)"></a>直接映射缓存(Direct mapped cache)</h2><p><img src="/post/47eca3ac/direct%20mapping-16533215656541.PNG"></p>
+<p>从上图中我们可以看到直接映射的方式控制器处理上很简单，只需要将地址简单的模除即可。但随之也引入问题：cache颠簸（cache thrashing）。具体表现为，地址A、E对应同一个cache line，当CPU访问A时，cache miss，然后将A缓存到cache line中，当CPU访问E时，同样会cache miss，然后从主存中load并缓存到cache line中。这样的情况下，cache对性能并没有什么提升。</p>
+<ul>
+<li>CPU想要访问一个数据，如果该数据在cache中有缓存，称之为cache hit，反之如果没有缓存则成为cache miss。</li>
+<li>cache的大小称之为cahe size，代表cache可以缓存最大数据的大小。我们将cache平均分成相等的很多块，每一个块大小称之为cache line，  其大小是cache line size。通常的cache line的大小为 4~128 Bytes。</li>
+<li>cache line是cache和主存之间数据传输的最小单位。什么意思呢？当CPU试图load一个字节数据的时候，如果cache缺失，那么cache控制器会从主存中一次性的load cache line大小的数据到cache中。例如，  cache line大小是8字节。CPU即使读取一个byte，在cache缺失后，cache会从主存中load 8字节填充整个cache line。</li>
+<li>cache line大小是由实现方定义的，但是所有core的cache line大小是一样的。</li>
+</ul>
+<h3 id="cache的管理方式"><a href="#cache的管理方式" class="headerlink" title="cache的管理方式"></a>cache的管理方式</h3><p>怎么才叫数据在cache中缓存呢，又需要什么指标呢？我们将一个地址分为三个部分：tag，index和offset。</p>
+<p><img src="/post/47eca3ac/cache%E5%86%85%E9%83%A8%E5%AD%98%E5%82%A8.PNG"></p>
+<p>上图中的cache line大小为16 Bytes，所以offset需要占用4位；总共有256个cache line，需要8位才能定位找到某一个cache line，如果两个不同的地址，其index位域一样的话，这两个地址经过硬件散列后都会找到同一个cache line。当找到cache line之后，只能说明访问的地址对应的数据可能存在这个cache line中，但是也有可能是其他地址对应的数据（因为毕竟目前只是部分地址位域匹配上了）。所以还会有个tag域，每一个cache line都对应唯一一个tag，tag中保存的是整个地址位宽去除index和offset使用的bit剩余部分。</p>
+<p>tag、index和offset三者组合就可以唯一确定一个地址了。因此，当我们根据地址中index位找到cache line后，取出当前cache line对应的tag，然后和地址中的tag进行比较，如果相等，这说明cache命中。如果不相等，说明当前cache line存储的是其他地址的数据，这就是cache缺失。</p>
+<p>再用一个bit位表示该cache line中数据是否有效，只有有效的情况下，tag才有比较的意义，如果无效，直接判定cache miss。</p>
+<p>再用一个bit位表示该cache line中数据是否被写，此时cache中的数据与Main Memory中数据不一致，即ditry。</p>
+<ul>
+<li>tag部分是不计入cache size的，但是会占用cache的物理空间，所以才会有cache line一说，cache line越小变相的tag就会越多，隐形成本就更高了。</li>
+</ul>
+<h2 id="两路组相连缓存-Two-way-set-associative-cache"><a href="#两路组相连缓存-Two-way-set-associative-cache" class="headerlink" title="两路组相连缓存(Two-way set associative cache)"></a>两路组相连缓存(Two-way set associative cache)</h2><p>将cache 平均分成两份，每一份就是一路（way），索引序号一样的cache line组合在一起称之为一组（set）：</p>
+<p><img src="/post/47eca3ac/cache%20way.PNG"></p>
+<p>对比上文中的直接映射的方式，A、E地址就可以分配在两个cache line中了（同一组号，不同路）。</p>
+<p>两路组相连缓存的硬件成本相对于直接映射缓存更高。因为其每次比较tag的时候需要比较多个cache line对应的tag（某些硬件可能还会做并行比较，增加比较速度，这就增加了硬件设计复杂度）。但是可以简单略有效地解决cache thrashing问题。</p>
+<p><img src="/post/47eca3ac/cache%202-way.PNG"></p>
+<p>另外一个极端，如果所有cache line都放到一个组里，这种缓存方式称为全相连缓存(Full associative cache)。回到老问题：在性能与成本中平衡，常规芯片可能会采用4路组相连方式。在Cortex-A57中，ICache有3路，DCache会有2到4路，L2 Cache会有16路。</p>
+<h1 id="三、address类型"><a href="#三、address类型" class="headerlink" title="三、address类型"></a>三、address类型</h1><p>上文一直在提，通过address域分为三段：tag、index与offset。那么这里的地址到底是虚拟地址还是物理地址呢？CPU使用的都是虚拟地址，在MMU的作用下虚拟地址被转换为物理地址，最终通过这个物理地址在Main Memory中进行寻址。在cache的设计中，既可以使用虚拟地址匹配也可以使用物理地址匹配。</p>
+<h2 id="PIPT"><a href="#PIPT" class="headerlink" title="PIPT"></a>PIPT</h2><p>CPU发出的虚拟地址经过MMU转换成物理地址，物理地址发往cache控制器查找确认是否命中cache。由于物理地址的唯一性，所有能保证找到的cache line肯定是准确的，缺点就是每次查找cache都需要经过MMU的转换，性能上还有优化的空间。</p>
+<p><img src="/post/47eca3ac/PIPT.PNG" alt="PIPT"></p>
+<h2 id="VIVT"><a href="#VIVT" class="headerlink" title="VIVT"></a>VIVT</h2><p>CPU发出的虚拟地址直接送到cache控制器，如果cache hit。直接从cache中返回数据给CPU。如果cache miss，则把虚拟地址发往MMU，经过MMU转换成物理地址，根据物理地址从主存(main memory)读取数据。</p>
+<p><img src="/post/47eca3ac/VIVT.PNG" alt="VIVT"></p>
+<p>这种方式性能上可能会是“最优”，因为CPU发出的虚拟地址直接去匹配缓存了，不需要额外转换，提升了cache的访问速度，但随之带来的两个使用上的问题：歧义(ambiguity)和别名(alias)。为了保证cache能够正常准确的工作，OS需要负责处理这两个问题。</p>
+<ul>
+<li><p>歧义(ambiguity)是指不同的数据在cache中具有相同的tag和index。cache控制器判断是否命中cache的依据就是tag和index，因此这种情况下，cache控制器根本没办法区分不同的数据。这就产生了歧义。虚拟地址相同，但对应的物理地址不同。对应的解决办法可以是flush cache。例如在task switching后，flush所有的cache，将cache写回到主存中，但也会导致新task运行时出现大量cache miss，影响性能。</p>
+</li>
+<li><p>别名(alias)是指同一个物理地址的数据被加载到不同的cache line中。虚拟地址不同，但对应的物理地址相同。例如share memory。对应的解决办法可以是建立nocache的memory，但又失去的cache带来的好处。</p>
+<p>  <img src="/post/47eca3ac/error.PNG"></p>
+</li>
+</ul>
+<h2 id="VIPT"><a href="#VIPT" class="headerlink" title="VIPT"></a>VIPT</h2><p>由于上述两种方式所带来的不便，折中之后出现VIPT，即使用虚拟地址的inde + 物理地址的tag。而且在cache控制器查找index同时，MMU可以转换物理地址，两者可以同时进行。完成后再进行tag的比较，进而确定cache line。为了对MMU的转换进行加速，硬件上为MMU也加了一块cache，称之为TLB（Translation Lookaside Buffer），参考<a href="/post/e533a213" title="MMU的cache">MMU的cache</a>。</p>
+<p>由于tag部分是来自物理地址，具有唯一性，所以不会存在歧义。但确定cache line的index来自虚拟地址，还是存在别名风险。</p>
+<ul>
+<li>VIPT的tag取多少位的问题，正常来说是除去index+offset后的位数（假设x位），但是如果x大于物理页面大小的剩余位数（假设y位），则tag取y位，否则取x位。</li>
+<li>换一种说法：当一路cache大小大于等于page size的时候，VIPT的tag取决于物理页大小的剩余位数。否则的话就是除去index和offset后剩余的位数。</li>
+</ul>
+<p>如何解决别名问题呢？</p>
+<p>在linux中，一个内存页通常是4K（bit 11 – bit 0），如果index + offset也正好在bit 11 – bit 0上时，无论转不转为物理地址，它都在一个物理页内，所以通过index就能唯一确定cache，不存在别名问题。</p>
+<p>但如果index + offse大于bit11 （例如 bit12 – bit0）了呢，由于此时tag取的是bit 63 – bit 12。由于bit12可能不一样，bit11 – bit0一样，所以出现了别名问题（index不一样，所以cache line不一样，但是物理地址相同所以取的tag是一样的）。</p>
+<p>对比上述两个小分析，我们可以使用cache对齐的方式解决这个问题（注意不是cache line对齐）。</p>
+<h1 id="四、cache的策略"><a href="#四、cache的策略" class="headerlink" title="四、cache的策略"></a>四、cache的策略</h1><h2 id="分配策略"><a href="#分配策略" class="headerlink" title="分配策略"></a>分配策略</h2><ul>
+<li>读分配（Read allocation ，RA）：当CPU读数据时，发生cache缺失，这种情况下都会分配一个cache line缓存从主存读取的数据。默认情况下，cache都支持读分配。</li>
+<li>写分配（Write allocation ，WA）：当store数据时发生cache miss，会触发一个read操作，将数据从主存中读到cache中，然后写cache line中数据。</li>
+</ul>
+<h2 id="更新策略"><a href="#更新策略" class="headerlink" title="更新策略"></a>更新策略</h2><p>当写数据时，cache 命中了之后，数据如何更新的策略。</p>
+<ul>
+<li><p>写回（Write-back，WB）：当CPU执行store指令并在cache命中时，我们只更新cache中的数据。此时Main Memory中数据不是最新的，最新的数据在cache line中，dirty位置位。</p>
+<p>  <img src="/post/47eca3ac/write_back.PNG"></p>
+</li>
+<li><p>写直通（Write-through，WT）：当CPU执行store指令并在cache命中时，我们更新cache中的数据并且更新主存中的数据。</p>
+<p>  <img src="/post/47eca3ac/write_through.PNG"></p>
+</li>
+</ul>
+<h1 id="五、cache的操作"><a href="#五、cache的操作" class="headerlink" title="五、cache的操作"></a>五、cache的操作</h1><ul>
+<li>Invalid：通过清除valid bit来使数据无效，系统reset后必须置为invalid状态</li>
+<li>Clean：是指把cache中的数据写入下一级缓存或者Main Memory中，并清除dirty bit。该方法只在write-back策略下的cache有效，并且只适用于data cache</li>
+<li>Zero：使cache中的一个数据块清零，而无需首先从外域读取其内容，仅适用于data cache。可以起到预取和加速的效果，参考内核memset.S的实现</li>
+</ul>
+<p>具体指令可以参考《ARMv8-A Programmer‘s Guide》对应章节。</p>
+<h2 id="PoC与PoU"><a href="#PoC与PoU" class="headerlink" title="PoC与PoU"></a>PoC与PoU</h2><ul>
+<li>PoC（Point of Coherency）：系统中所有的观察者（CPU、DSP、GPU或DMA等），都能看到同一份内存拷贝</li>
+<li>PoU（Point of Unification）：一个CPU内部所有观察者（指令cache、数据cache或MMU的TLB等），都能看到同一份内存拷贝</li>
+</ul>
+<p>什么意思呢？不同视角而已，PoU是以一个PE（该PE执行了cache相关的指令）为视角，PE需要透过各级cache（涉及instruction cache、data cache和translation table walk）来访问Main Memory，这些操作在memory hierarchy的某个点上（或者说某个level上）会访问同一个copy，那么这个点就是该PE的Point of Unification。PoC是以系统中所有的“module”为视角，这些“module”在进行memory access的时候看到的是同一个copy的那个“点”。</p>
+<p>这有什么用，PoC和PoU定义了cache操作的范围，所有的一切都是为了更好的利用cache中的数据，提高性能。</p>
+<h2 id="其他话题"><a href="#其他话题" class="headerlink" title="其他话题"></a>其他话题</h2><h3 id="从系统层面来所，CPU、DSP、GPU或DMA等，他们之间cache一致性的问题"><a href="#从系统层面来所，CPU、DSP、GPU或DMA等，他们之间cache一致性的问题" class="headerlink" title="从系统层面来所，CPU、DSP、GPU或DMA等，他们之间cache一致性的问题"></a>从系统层面来所，CPU、DSP、GPU或DMA等，他们之间cache一致性的问题</h3><p>例如DMA与CPU之间cache一致性的问题。DMA是直通硬件获取数据的，独立于CPU工作，所以不会经过CPU内部的cache，那么怎么保证他们俩之间的一致性呢？在使用DMA时，软件上通常需要申请一块内存（外设与内存之间，如果是内存到内存的话就申请两块内存了），CPU视角下的内存就可能是带cache的，而DMA控制器搬运的数据是直接从Main Memory中获取的。</p>
+<ul>
+<li>映射的内存是no cached。例如dma_alloc_coherent()接口，一致性映射。</li>
+<li>映射的内存是cache的方式。例如dma_map_single()接口，流式DMA映射，建立流式映射时，必须告诉内核数据流的方向（dma_data_direction），在使用时软件需要考虑clear cache或invalid cache。</li>
+</ul>
+<h3 id="从CPU层面来说，会有很多CORE，多核之间的cache如何同步"><a href="#从CPU层面来说，会有很多CORE，多核之间的cache如何同步" class="headerlink" title="从CPU层面来说，会有很多CORE，多核之间的cache如何同步"></a>从CPU层面来说，会有很多CORE，多核之间的cache如何同步</h3><p>参考<a href="/post/9b0bfd01" title="MOESI协议">MOESI协议</a>。</p>
+<h3 id="从一个CORE内部来说，它有ICache，DCache和TLB，他们之间cache会不会存在一致性的问题"><a href="#从一个CORE内部来说，它有ICache，DCache和TLB，他们之间cache会不会存在一致性的问题" class="headerlink" title="从一个CORE内部来说，它有ICache，DCache和TLB，他们之间cache会不会存在一致性的问题"></a>从一个CORE内部来说，它有ICache，DCache和TLB，他们之间cache会不会存在一致性的问题</h3><p>针对ICache来说，具有和TLB类似的属性，都是只读的。所以在考虑ICache的歧义与别名问题时，可以认为说没有什么风险。但在一种特殊场景下，可能会存在运行时更改code，例如调试时。此时我们就需要考虑ICache与DCache的一致性问题了（平常时他们独立工作，分开分析歧义与别名问题即可）。</p>
+<p>更改code时，通过DCache来store新的code码，执行时通过ICache load指令。越来越多的架构开始支持I&#x2F;D缓存一致性，如果硬件不支持的话，需要软件去考虑怎么同步了：</p>
+<ul>
+<li>将需要修改的指令code load到DCache中，然后修改DCache中的对应cache line</li>
+<li>clean DCache，将数据刷回到主存中</li>
+<li>invalid ICache，重新读会cache，此时读到的指令code就是主存中最新的了，即保证了一致</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+<script src="https://sdk.jinrishici.com/v2/browser/jinrishici.js" charset="utf-8"></script>
+<script>
+  jinrishici.load((result) => {
+    let jrsc = document.getElementById('jrsc');
+    const data = result.data;
+    let author = data.origin.author;
+    let title = '《' + data.origin.title + '》';
+    let content = data.content.substr(0, data.content.length - 1);
+    let dynasty = data.origin.dynasty.substr(0, data.origin.dynasty.length - 1);
+    jrsc.innerText = content + ' @ ' + dynasty + '·' + author + title;
+  });
+</script>
+<div style="text-align: center"><span id="jrsc" >正在加载今日诗词....</span></div>
+
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/450af877" rel="prev" title="hexo建站说明">
+                  <i class="fa fa-angle-left"></i> hexo建站说明
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/e533a213" rel="next" title="MMU的cache">
+                  MMU的cache <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Liu Bing</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">20k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:13</span>
+  </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>

@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.staticfile.org/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.staticfile.org/fancyapps-ui/5.0.36/fancybox/fancybox.css" integrity="sha256-zM8WXtG4eUn7dKKNMTuoWZub++VnSfaOpA/8PJfvTBo=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"byronliubing.gitee.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.23.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="此篇将记录一些关于Cortex-M7架构相关的知识及使用说明。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cortex-M7架构">
+<meta property="og:url" content="https://byronliubing.gitee.io/post/7d4db06d">
+<meta property="og:site_name" content="Byron Liu">
+<meta property="og:description" content="此篇将记录一些关于Cortex-M7架构相关的知识及使用说明。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/7d4db06d/image-20250502125827618.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/7d4db06d/image-20250502130149220.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/7d4db06d/image-20250502161609386.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/7d4db06d/image-20250502161639210.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/7d4db06d/image-20250502161700906.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/7d4db06d/image-20250502161942728.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/7d4db06d/image-20250502162049220.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/7d4db06d/image-20250502162303630.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/7d4db06d/image-20250502162346368.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/7d4db06d/image-20250502162400368.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/7d4db06d/image-20250502162409704.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/7d4db06d/image-20250502162529737.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/7d4db06d/image-20250502162859308.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/7d4db06d/image-20250502162917419.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/7d4db06d/image-20250502163103086.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/7d4db06d/image-20250502163403058.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/7d4db06d/image-20250502163417210.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/7d4db06d/image-20250502163450883.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/7d4db06d/image-20250502163622295.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/7d4db06d/image-20250502163659418.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/7d4db06d/image-20250502163931728.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/7d4db06d/image-20250502164010447.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/7d4db06d/image-20250502164040790.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/7d4db06d/image-20250502164124480.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/7d4db06d/image-20250502164141775.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/7d4db06d/image-20250502164406532.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/7d4db06d/image-20250502164437099.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/7d4db06d/image-20250502164525786.png">
+<meta property="article:published_time" content="2025-05-02T04:57:24.000Z">
+<meta property="article:modified_time" content="2025-05-02T08:58:05.035Z">
+<meta property="article:author" content="Liu Bing">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://byronliubing.gitee.io/post/7d4db06d/image-20250502125827618.png">
+
+
+<link rel="canonical" href="https://byronliubing.gitee.io/post/7d4db06d.html">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://byronliubing.gitee.io/post/7d4db06d","path":"post/7d4db06d.html","title":"Cortex-M7架构"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Cortex-M7架构 | Byron Liu</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdn.staticfile.org/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+  <script src="https://cdn.staticfile.org/fancyapps-ui/5.0.36/fancybox/fancybox.umd.js" integrity="sha256-hiUEBwFEpLF6DlB8sGXlKo4kPZ46Ui4qGpd0vrVkOm4=" crossorigin="anonymous" defer></script>
+  <script src="https://cdn.staticfile.org/pangu/4.0.7/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+  <script src="/js/third-party/fancybox.js" defer></script>
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Byron Liu</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">1</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">10</span></a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81Processor%E7%9B%B8%E5%85%B3"><span class="nav-number">1.</span> <span class="nav-text">一、Processor相关</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Processor-mode-Privilege-levels"><span class="nav-number">1.1.</span> <span class="nav-text">Processor mode &amp;&amp; Privilege levels</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Stack"><span class="nav-number">1.2.</span> <span class="nav-text">Stack</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Register"><span class="nav-number">1.3.</span> <span class="nav-text">Register</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81NVIC%E6%8E%A7%E5%88%B6%E5%99%A8"><span class="nav-number">2.</span> <span class="nav-text">二、NVIC控制器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%AD%E6%96%AD%E4%BC%98%E5%85%88%E7%BA%A7"><span class="nav-number">2.1.</span> <span class="nav-text">中断优先级</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Exception-entry-exit"><span class="nav-number">2.2.</span> <span class="nav-text">Exception entry&#x2F;exit</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%B9%E6%AE%8A%E4%B8%AD%E6%96%AD%E6%9C%BA%E5%88%B6"><span class="nav-number">2.3.</span> <span class="nav-text">特殊中断机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%96%AD"><span class="nav-number">2.4.</span> <span class="nav-text">其他系统中断</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81MPU%E7%9B%B8%E5%85%B3"><span class="nav-number">3.</span> <span class="nav-text">三、MPU相关</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Memory-type-attribute"><span class="nav-number">3.0.1.</span> <span class="nav-text">Memory type &amp;&amp; attribute</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MPU%E7%9B%B8%E5%85%B3%E5%AF%84%E5%AD%98%E5%99%A8"><span class="nav-number">3.0.2.</span> <span class="nav-text">MPU相关寄存器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BA%BF%E6%97%B6%E9%92%9F"><span class="nav-number">3.0.3.</span> <span class="nav-text">总线时钟</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Liu Bing</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">10</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://byronliubing.gitee.io/post/7d4db06d">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Bing">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Byron Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Cortex-M7架构 | Byron Liu">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Cortex-M7架构
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2025-05-02 12:57:24 / 修改时间：16:58:05" itemprop="dateCreated datePublished" datetime="2025-05-02T12:57:24+08:00">2025-05-02</time>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>3.1k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>11 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>此篇将记录一些关于Cortex-M7架构相关的知识及使用说明。</p>
+<span id="more"></span>
+
+<p>目前项目上使用的STM32H743是基于Cortext-M7核心的MCU，CM7采用哈佛结构，拥有独立的指令总线和数据总线，并且支持不对齐的数据访问。下面是MCU所支持的资源情况。</p>
+<p><img src="/post/7d4db06d/image-20250502125827618.png" alt="image-20250502125827618"></p>
+<h1 id="一、Processor相关"><a href="#一、Processor相关" class="headerlink" title="一、Processor相关"></a>一、Processor相关</h1><h2 id="Processor-mode-Privilege-levels"><a href="#Processor-mode-Privilege-levels" class="headerlink" title="Processor mode &amp;&amp; Privilege levels"></a>Processor mode &amp;&amp; Privilege levels</h2><ul>
+<li><p>Thread mode</p>
+</li>
+<li><p>Handler mode — 一般用来处理异常</p>
+</li>
+<li><p>Unprivileged</p>
+</li>
+<li><p>Privileged</p>
+<p>  <img src="/post/7d4db06d/image-20250502130149220.png" alt="image-20250502130149220"></p>
+<p>  上电复位后，processor处于thread mode 特权级，默认使用MSP。该值存在0x00000000位置处，也就是VectorTable[0]的位置。</p>
+</li>
+</ul>
+<h2 id="Stack"><a href="#Stack" class="headerlink" title="Stack"></a>Stack</h2><p>在arm体系架构中，通常使用向下生长的满栈（Full Descending Stack），栈顶是高地址，例如我们设置一个kernel_stack[1024]的栈，栈顶为&amp;kernel_stack[1023]，SP指针永远指向最后入栈的地址。</p>
+<ul>
+<li><p>入栈时，先将SP减去数据大小，然后再把数据写入    </p>
+</li>
+<li><p>Full stack与Empty Stack：（空满只是表示SP指向单元的状态，并不是说堆栈的存储状态）</p>
+<ul>
+<li><p>Full Stack：堆栈指针SP永远指向最后一个入栈的位置</p>
+</li>
+<li><p>Empty Stack：堆栈指针SP永远指向下一个空栈的位置</p>
+</li>
+</ul>
+</li>
+<li><p>“向上生长“与”向下生长“：（一般高地址在上面）</p>
+<ul>
+<li><p>向上生长：向高地址方向生长，也称为递增堆栈</p>
+</li>
+<li><p>向下生长：向低地址方向生长，也成为递减堆栈</p>
+</li>
+</ul>
+</li>
+<li><p>执行PUSH&#x2F;POP指令：根据Register的标号，从小到大的保存</p>
+<p>  PUSH {R12, R0, R4} ：</p>
+<p>  先将SP - 12，再依次存入R0，R4，R12</p>
+<p>  POP {R4, R12, R0}：</p>
+<p>  从当前SP位置依次读取出R0，R4，R12</p>
+</li>
+</ul>
+<p>在Cortext-M系列中，会有两个栈，main stack（MSP）和process stack（PSP），在handler mode下，永远都是使用MSP，在thread mode下，可以通过CONTROL寄存器来选择是使用MSP还是PSP。MSP与PSP是banked，在软件编程中永远使用的SP。在操作SP时需要保证SP对齐，要求8字节对齐，在armv8上要求是16字节对齐，如果当前指令使用SP作为基地址，则触发栈非对齐异常。所以函数入栈保存参数时，以对齐要求自动填充栈空间：在v8中，一个参数的话需要sp-16，哪怕该参数为int也是一样。</p>
+<p><img src="/post/7d4db06d/image-20250502161609386.png" alt="image-20250502161609386"></p>
+<h2 id="Register"><a href="#Register" class="headerlink" title="Register"></a>Register</h2><p>​	总共含有16个寄存器 + 其他系统寄存器（需要通过msr&#x2F;mrs来访问），所有寄存器都是32bits的。</p>
+<p><img src="/post/7d4db06d/image-20250502161639210.png" alt="image-20250502161639210"></p>
+<p><img src="/post/7d4db06d/image-20250502161700906.png" alt="image-20250502161700906"></p>
+<ul>
+<li><p>三种运行模式：</p>
+<ul>
+<li>ARM模式：processor工作在32位指令的状态，所有指令都是32位编码</li>
+<li>Thumb模式：processor工作在16位指令的状态，所有指令按照16位编码，可以认为是ARM的一个子集</li>
+<li>Thumb-2模式：混合，既有16位也有32位，是Thumb的一个超集。【Cortex-M7只支持这个】</li>
+</ul>
+</li>
+<li><p>PC指针永远指向即将要运行的那条指令的地址，其中BIT[0]具有特殊含义，0表示为arm模式，1表示为thumb模式</p>
+</li>
+<li><p>LR（Link Register，R14），子程序返回时根据LR值进行跳转（PC &#x3D; LR），在函数返回或者异常返回时特别有用</p>
+</li>
+<li><p>针对PSR寄存器组特别说一点，EPSR中的IT不是interrupt的概念，而是IF-THEN条件判断指令：</p>
+<p>  <img src="/post/7d4db06d/image-20250502161942728.png" alt="image-20250502161942728"></p>
+</li>
+<li><p>FAULTMASK（Fault Mask Register），异常屏蔽寄存器，设置为1时将屏蔽所有的异常（除了NMI），而且在退出异常时，会自动清0（除了NMI外）</p>
+</li>
+<li><p>CONTROL寄存器：</p>
+<p>  <img src="/post/7d4db06d/image-20250502162049220.png" alt="image-20250502162049220"></p>
+</li>
+</ul>
+<h1 id="二、NVIC控制器"><a href="#二、NVIC控制器" class="headerlink" title="二、NVIC控制器"></a>二、NVIC控制器</h1><p>​	NVIC是用来处理MCU上所有的中断及系统异常的，并掌管所有的中断状态管理及优先级管理。每个异常一定会处于下面四个状态中的一个：</p>
+<ul>
+<li>Inactive：没有被激活也没有pending</li>
+<li>Pending：中断来了，但是processor还没有响应</li>
+<li>Activate：已经被processor响应了，但是还没有完成</li>
+<li>Activate and Pending：处于activate状态下的中断，中断源又触发了一个同样的中断</li>
+</ul>
+<p>​	异常触发时，通过VectorTable定义的进行执行或跳转，系统初始化时VectorTable在0地址，特权模式下可以通过写VTOR改VectorTable所在的地址，每个表项只有4个字节，所以一般存放一条跳转指令。</p>
+<ul>
+<li>由于VectorTable大小随中断个数变化，导致base地址对齐有要求，至少是4<em>16 &#x3D; 64字节对齐，边界至少是2的指数次幂对齐，例如，支持21个中断的话，则需要4</em>21 &#x3D; 84 —&gt; 128字节对</li>
+</ul>
+<p>​	<img src="/post/7d4db06d/image-20250502162303630.png" alt="image-20250502162303630"></p>
+<h2 id="中断优先级"><a href="#中断优先级" class="headerlink" title="中断优先级"></a>中断优先级</h2><p>中断优先级除了三个系统异常外（reset:-3, NMI:-2, HardFault:-1），其他的异常中断优先级都是可以配置的：</p>
+<ul>
+<li><p>priority数值越小，优先级越高</p>
+</li>
+<li><p>针对系统异常，优先级配置使用SHPR1–SHPR3寄存器</p>
+<p>  <img src="/post/7d4db06d/image-20250502162346368.png" alt="image-20250502162346368"></p>
+</li>
+<li><p>针对其他的外部中断，优先级配置使用NVIC_IPR0 – NVIC_IPR59来配置，每8个bits代表一个中断</p>
+<p>  <img src="/post/7d4db06d/image-20250502162400368.png" alt="image-20250502162400368"></p>
+<p>  <img src="/post/7d4db06d/image-20250502162409704.png" alt="image-20250502162409704"></p>
+<p>  每个优先级分为两部分，高位为group priority，低位为该group中的subpriority：</p>
+<ul>
+<li>group优先级决定抢占，同group级别不会发生preempt</li>
+<li>如果group优先级相同，subpriority决定哪个中断优先响应，数值越小，优先级越高</li>
+<li>如果priority整个字段相等，你们IRQ号越小的，优先响应</li>
+<li>默认值是0</li>
+</ul>
+</li>
+</ul>
+<p>​	那么具体是分几位呢？通过读取AIRCR（Application interrupt and reset control register）可以获取，该寄存器如果是需要write的话，key字段必须填写0x5FA。</p>
+<p><img src="/post/7d4db06d/image-20250502162529737.png" alt="image-20250502162529737"></p>
+<p>​	PRIMASK（Priority Mask Register）：只能设置成0&#x2F;1，可以屏蔽所有的“可配置优先级的”中断（除了那3个）：</p>
+<ul>
+<li>CPSIE I — 清除PRIMASK，使能中断</li>
+<li>CPSID I — 设置PRIMASK，关中断</li>
+<li>MSR PRIMASK，R0 R0为0或者1</li>
+</ul>
+<p>​	BASEPRI（Base Priority Register）：设置一个优先级水线，processor不会响应interrupt priority值大于等于该值的中断，（优先级低）被屏蔽不能响应。</p>
+<h2 id="Exception-entry-exit"><a href="#Exception-entry-exit" class="headerlink" title="Exception entry&#x2F;exit"></a>Exception entry&#x2F;exit</h2><p>​	<strong>进入异常</strong>，一般有两种情况，一种是Thread mode下中断进入，另一种是中断嵌套。</p>
+<p>​	当processor进入异常时，会自动把一些信息压栈（当前栈，如果当前在thread mode下使用PSP，则保存到PSP的栈中），如果软件中还需要保存其他信息的话，需要我们自己手动去压栈保存。</p>
+<p>​	<img src="/post/7d4db06d/image-20250502162859308.png" alt="image-20250502162859308"></p>
+<p>​	依次压栈xPSR，PC，LR，R12，R3-R0，具体写入顺序不一定，与MCU设计有关。</p>
+<p>​	<img src="/post/7d4db06d/image-20250502162917419.png" alt="image-20250502162917419"></p>
+<ul>
+<li>processor从VectorTable中找到对应中断的入口地址，并赋给PC</li>
+<li>processor会写入一个EXC_RETURN值到LR寄存器中</li>
+<li>入栈完成后，切换新的SP指针，跳转到入口地址处（PC）开始执行</li>
+</ul>
+<p>​	<strong>异常返回</strong>：当异常服务例程执行完成后，需要做一个特殊的异常返回序列，从而恢复到先前的系统状态。</p>
+<p>​	在异常进入时，LR被赋予了一个特殊的EXC_RETURN值，现在就需要把这个“LR”恢复回来，当EXC_RETURN值被恢复到PC寄存器中时，就相当于告诉了processor异常处理完成了，可以恢复上文了。</p>
+<p>​	<img src="/post/7d4db06d/image-20250502163103086.png" alt="image-20250502163103086"></p>
+<p>​	至于怎么把该值赋给PC：</p>
+<ul>
+<li>BX LR</li>
+<li>POP {PC}</li>
+<li>LDR PC，{Rx}</li>
+</ul>
+<h2 id="特殊中断机制"><a href="#特殊中断机制" class="headerlink" title="特殊中断机制"></a>特殊中断机制</h2><ul>
+<li>Tail-chaining：这种机制加快了异常服务的速度， 在完成一个异常处理程序后，如果有一个处于挂起状态且满足进入异常处理的条件，堆栈弹出将被跳过，控制权将被转移到新的异常处理程序。</li>
+<li>Late-arriving：这种机制加速了抢占， 如果在先前异常在状态保存期间有更高优先级的异常发生，处理器将处理更高优先级的异常并从中断向量获取异常处理程序。 状态保存不受影响，状态保存是对这两个异常都是相同的， 因此状态保存不会被打断。 处理器可以接受迟到的异常，直到原有异常的异常处理程序的第一条指令进入处理器的执行阶段。</li>
+</ul>
+<h2 id="其他系统中断"><a href="#其他系统中断" class="headerlink" title="其他系统中断"></a>其他系统中断</h2><p>​	如果发生了一个异常但不能被即刻响应，我们称这种为pending。正常情况下：</p>
+<ul>
+<li><p>SVCall：执行SVC指令触发，然后陷入到特权模式下运行，一般用于系统调用实现，svc异常是必须立即得到响应的，如果因为优先级设置不当导致它pending了，会产生一个hardfault，可以通过寄存器来传递SVC号，在CM7中，SVC号会被编译到PC指令中，所以也可以通过PC值来获取。</p>
+</li>
+<li><p>PendSV：向PendSV对应的NVIC_INT_CTRL寄存器中写1，即可触发PendSV异常。它可以pending，常用于上下文切换需要把该中断优先级设置为最低SVC与PendSV配合，可以实现较好的上下文切换机制：</p>
+<p>  ​	<img src="/post/7d4db06d/image-20250502163403058.png" alt="image-20250502163403058"></p>
+<p>  下图为使用pendsv方式实现的任务切换，systick可以认为是更高优先级的中断：</p>
+<p>  ​	<img src="/post/7d4db06d/image-20250502163417210.png" alt="image-20250502163417210"></p>
+</li>
+<li><p>Fault类中断：BusFault，UsageFault，MPU Fault和HardFault</p>
+</li>
+</ul>
+<h1 id="三、MPU相关"><a href="#三、MPU相关" class="headerlink" title="三、MPU相关"></a>三、MPU相关</h1><p>​	<img src="/post/7d4db06d/image-20250502163450883.png" alt="image-20250502163450883"></p>
+<p>​	TCM : Tightly-Coupled Memory 紧密耦合内存 。ITCM用于指令，DTCM用于数据，特点是跟内核速度一样（400MHz），而片上RAM的速度（200MHz）都达不到这个速度。</p>
+<h3 id="Memory-type-attribute"><a href="#Memory-type-attribute" class="headerlink" title="Memory type &amp;&amp; attribute"></a>Memory type &amp;&amp; attribute</h3><p>​	<strong>内存类型：</strong></p>
+<ul>
+<li>normal memory：MCU可以为了性能做一些特殊操作，例如提前预取，乱序发送或数据重组等等</li>
+<li>device memory：读写访问都是按照顺序的，外设寄存器默认使用该中方式</li>
+<li>Strongly-ordered memory：顺序一致性严格保证，而且是写直通的，一般也是没有cache的相比device memory，更严格，必须一条指令执行完了才运行下一条<ul>
+<li><em><strong>在armv8中，已经没有该类型了，只有normal与device</strong></em></li>
+</ul>
+</li>
+</ul>
+<p>​	<img src="/post/7d4db06d/image-20250502163622295.png" alt="image-20250502163622295"></p>
+<p>​	<strong>内存属性：</strong></p>
+<p>​	<img src="/post/7d4db06d/image-20250502163659418.png" alt="image-20250502163659418"></p>
+<ul>
+<li>shareable表示“共享”，共享的内存空间，MCU会在总线层面上保证多主机之间的数据同步，例如CPU与DMA控制器之间，Strongly-ordered memory就是shareable的。同时共享属性内存是不具有cache属性（non-cacheable的）</li>
+<li>如果多个master访问一个非共享的memory，软件需要保证数据的一致性，CM7不支持硬件层面的数据一致性</li>
+<li>cache line为32字节，只要开启了cache，read allocate就默认开启了</li>
+</ul>
+<p>​	<strong>MPU regions：</strong></p>
+<p>​	MPU可以将memory map区域分成多个region，每个region定义分区的base addr，size和memory 权限及属性，支持region重叠，且具有优先级，标号越高的region优先级越高，STM32H7系列上支持最高16个region，且每个region还可以均分成8个子区域（subregions），由于32字节的cache line，所以region大小至少32 * 8 &#x3D; 256字节才可以分，每个subregion可以独立使能。</p>
+<p>​	<img src="/post/7d4db06d/image-20250502163931728.png" alt="image-20250502163931728"></p>
+<ul>
+<li>background region（编号 -1），可选功能，由于优先级最低，没有覆盖的区域可以使用</li>
+</ul>
+<p>​	<em>The background region has the same memory access attributes as the default memory map, but is accessible from privileged software only.</em> </p>
+<p>​	具体的属性可以参考PM0253 的2.3.3章节。</p>
+<p>​	<img src="/post/7d4db06d/image-20250502164010447.png" alt="image-20250502164010447"></p>
+<h3 id="MPU相关寄存器"><a href="#MPU相关寄存器" class="headerlink" title="MPU相关寄存器"></a>MPU相关寄存器</h3><p>​	通过以下寄存器来操作MPU模块：</p>
+<p>​	<img src="/post/7d4db06d/image-20250502164040790.png" alt="image-20250502164040790"></p>
+<ul>
+<li>每个region的base address需要“region size”对齐的，比如64k的region，其地址必须是64KB地址对齐的</li>
+<li>每个region的size是2的指数幂的，最小是32字节，也就是MPU_RASR寄存器的SIZE域至少是4（size &#x3D; 2^（4+1） &#x3D; 32B）</li>
+</ul>
+<h3 id="总线时钟"><a href="#总线时钟" class="headerlink" title="总线时钟"></a>总线时钟</h3><p>​	<img src="/post/7d4db06d/image-20250502164124480.png" alt="image-20250502164124480"></p>
+<p>​	总线下挂所有的设备，根据总线功能和频率不一样，分为三个域：D1，D2和D3。</p>
+<p>​	特别说明TCM，这两个是直连CPU的：</p>
+<p>​		<img src="/post/7d4db06d/image-20250502164141775.png" alt="image-20250502164141775"></p>
+<ul>
+<li>D1域中各个外设是挂在64位AXI总线组成的6*7的矩阵上</li>
+<li>D2域中各个外设是挂在32位AHB总线组成的10*9的矩阵上</li>
+<li>D3域中各个外设是挂在32位AHB总线组成的3*2的矩阵上</li>
+</ul>
+<p>​	<img src="/post/7d4db06d/image-20250502164406532.png" alt="image-20250502164406532"></p>
+<p>​	<strong>MCU访问DTCM-RAM是400MHz，而通过AXI访问SRAM是200MHz，所以一般都直接使能MPU，但可以不配置region，只是来使用cache。</strong></p>
+<p>​	<img src="/post/7d4db06d/image-20250502164437099.png" alt="image-20250502164437099"></p>
+<p>​	可以通过查阅《STM32H7xx参考手册》第12章节的“Table 90. Peripherals interconnect matrix ”来确定外设挂在哪个总线下面。</p>
+<p><strong>系统时钟分配：</strong></p>
+<p><img src="/post/7d4db06d/image-20250502164525786.png" alt="image-20250502164525786"></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+<script src="https://sdk.jinrishici.com/v2/browser/jinrishici.js" charset="utf-8"></script>
+<script>
+  jinrishici.load((result) => {
+    let jrsc = document.getElementById('jrsc');
+    const data = result.data;
+    let author = data.origin.author;
+    let title = '《' + data.origin.title + '》';
+    let content = data.content.substr(0, data.content.length - 1);
+    let dynasty = data.origin.dynasty.substr(0, data.origin.dynasty.length - 1);
+    jrsc.innerText = content + ' @ ' + dynasty + '·' + author + title;
+  });
+</script>
+<div style="text-align: center"><span id="jrsc" >正在加载今日诗词....</span></div>
+
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/4f4982c3" rel="prev" title="Cortex-R5架构">
+                  <i class="fa fa-angle-left"></i> Cortex-R5架构
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/72083c9f" rel="next" title="ARMv8-A架构">
+                  ARMv8-A架构 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Liu Bing</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">20k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:13</span>
+  </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>

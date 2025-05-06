@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.staticfile.org/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.staticfile.org/fancyapps-ui/5.0.36/fancybox/fancybox.css" integrity="sha256-zM8WXtG4eUn7dKKNMTuoWZub++VnSfaOpA/8PJfvTBo=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"byronliubing.gitee.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.23.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="​	此篇将记录一些关于Cortex-R5架构相关的知识及使用说明。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cortex-R5架构">
+<meta property="og:url" content="https://byronliubing.gitee.io/post/4f4982c3">
+<meta property="og:site_name" content="Byron Liu">
+<meta property="og:description" content="​	此篇将记录一些关于Cortex-R5架构相关的知识及使用说明。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/4f4982c3/image-20250430201315546-6015733-6156414.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/4f4982c3/image-20250430201438471-6015733-6156428.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/4f4982c3/image-20250430201551020-6015733-6156436.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/4f4982c3/image-20250430201820043-6015733-6156443.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/4f4982c3/image-20250502113214979.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/4f4982c3/image-20250430202332367-6156751.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/4f4982c3/image-20250430202346900-6156776.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/4f4982c3/image-20250430202733591-6156810.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/4f4982c3/image-20250430202902889-6156814.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/4f4982c3/image-20250430203015492-6156824.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/4f4982c3/image-20250430203029315-6156827.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/4f4982c3/image-20250430203057858-6156831.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/4f4982c3/image-20250430203156082-6156834.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/4f4982c3/image-20250430203212668-6156856.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/4f4982c3/image-20250430203248217-6156860.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/4f4982c3/image-20250430203346296-6156864.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/4f4982c3/image-20250430203434759-6156871.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/4f4982c3/image-20250430203449930-6156875.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/4f4982c3/image-20250502113916313.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/4f4982c3/image-20250430203711718-6156904.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/4f4982c3/image-20250430204109174-6156908.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/4f4982c3/image-20250430204122497-6156911.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/4f4982c3/image-20250430204135194-6156914.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/4f4982c3/image-20250430204203866-6156917.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/4f4982c3/image-20250430204216308-6156920.png">
+<meta property="article:published_time" content="2025-05-02T03:12:08.000Z">
+<meta property="article:modified_time" content="2025-05-02T09:00:04.896Z">
+<meta property="article:author" content="Liu Bing">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://byronliubing.gitee.io/post/4f4982c3/image-20250430201315546-6015733-6156414.png">
+
+
+<link rel="canonical" href="https://byronliubing.gitee.io/post/4f4982c3.html">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://byronliubing.gitee.io/post/4f4982c3","path":"post/4f4982c3.html","title":"Cortex-R5架构"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Cortex-R5架构 | Byron Liu</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdn.staticfile.org/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+  <script src="https://cdn.staticfile.org/fancyapps-ui/5.0.36/fancybox/fancybox.umd.js" integrity="sha256-hiUEBwFEpLF6DlB8sGXlKo4kPZ46Ui4qGpd0vrVkOm4=" crossorigin="anonymous" defer></script>
+  <script src="https://cdn.staticfile.org/pangu/4.0.7/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+  <script src="/js/third-party/fancybox.js" defer></script>
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Byron Liu</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">1</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">10</span></a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81Processor%E7%9B%B8%E5%85%B3"><span class="nav-number">1.</span> <span class="nav-text">一、Processor相关</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#CPU%E9%85%8D%E7%BD%AE"><span class="nav-number">1.1.</span> <span class="nav-text">CPU配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%87%E4%BB%A4%E9%9B%86"><span class="nav-number">1.2.</span> <span class="nav-text">指令集</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.3.</span> <span class="nav-text">运行模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%84%E5%AD%98%E5%99%A8%E7%BB%84"><span class="nav-number">1.4.</span> <span class="nav-text">寄存器组</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86"><span class="nav-number">2.</span> <span class="nav-text">二、异常处理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81MPU%E7%9B%B8%E5%85%B3"><span class="nav-number">3.</span> <span class="nav-text">三、MPU相关</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81FPU%E7%9B%B8%E5%85%B3"><span class="nav-number">4.</span> <span class="nav-text">四、FPU相关</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E6%B1%87%E7%BC%96%E6%93%8D%E4%BD%9C"><span class="nav-number">5.</span> <span class="nav-text">五、汇编操作</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Liu Bing</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">10</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://byronliubing.gitee.io/post/4f4982c3">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Bing">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Byron Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Cortex-R5架构 | Byron Liu">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Cortex-R5架构
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2025-05-02 11:12:08 / 修改时间：17:00:04" itemprop="dateCreated datePublished" datetime="2025-05-02T11:12:08+08:00">2025-05-02</time>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2.3k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>9 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>​	此篇将记录一些关于Cortex-R5架构相关的知识及使用说明。</p>
+<span id="more"></span>
+
+<h1 id="一、Processor相关"><a href="#一、Processor相关" class="headerlink" title="一、Processor相关"></a>一、Processor相关</h1><h2 id="CPU配置"><a href="#CPU配置" class="headerlink" title="CPU配置"></a>CPU配置</h2><p>一个Cortex-R5组可以容纳一个或两个CPU，那么就会形成以下几种组合：</p>
+<ul>
+<li>Single CPU</li>
+<li>Twin CPU<ul>
+<li>两个解耦的独立的CPU</li>
+<li>There is no internal hardware to maintain coherency between the two CPUs in a twin CPU Cortex-R5 group</li>
+<li>Split mode</li>
+</ul>
+</li>
+<li>Redndant CPU<ul>
+<li>一个功能CPU，一个冗余CPU</li>
+<li>两个CPU共用一个cache，只是逻辑运算一样</li>
+<li>Locked Mode</li>
+</ul>
+</li>
+</ul>
+<h2 id="指令集"><a href="#指令集" class="headerlink" title="指令集"></a>指令集</h2><p><img src="/post/4f4982c3/image-20250430201315546-6015733-6156414.png" alt="image-20250430201315546"></p>
+<p>​	一般通过pc指针的最后一个bit来表示模式：0表示ARM模式，1表示Thumb模式。两个模式唯一的差别就是指令编码位数不一样，导致代码量的不一样。</p>
+<h2 id="运行模式"><a href="#运行模式" class="headerlink" title="运行模式"></a>运行模式</h2><p>​	由于Cortex-R5F是基于ARMv7-R架构实现的，而ARMv7-R&#x2F;A基本一样（DDI0406C_d_armv7ar_arm.pdf），所以两者均体现7种不同的运行模式：</p>
+<p><img src="/post/4f4982c3/image-20250430201438471-6015733-6156428.png" alt="image-20250430201438471"></p>
+<p>​	除了USR模式是非特权模式外，其他6种都是特权模式；其中除了SYS模式外，其他5种模式称为“异常模式”。</p>
+<h2 id="寄存器组"><a href="#寄存器组" class="headerlink" title="寄存器组"></a>寄存器组</h2><p>​	通用寄存器：</p>
+<p><img src="/post/4f4982c3/image-20250430201551020-6015733-6156436.png" alt="image-20250430201551020"></p>
+<ul>
+<li>R13一般作为SP，SRS和REF指令使用R13寄存器进行恢复</li>
+<li>R14一般作为LR</li>
+<li>R15一般作为PC，在ARM模式下PC是word-aligned（在ARM体系中word是32 bits），在Thumb模式下PC是halfword-aligned</li>
+<li>USER Mode下是没有SPSR的，因为它不是异常模式；SYSTEM与USER模式是共用寄存器的，没有banked，所以一般在内核态下切换到SYSTEM Mode来获取用户态的寄存器，或保存或使用</li>
+</ul>
+<p>​	状态寄存器CPSR：</p>
+<p>​	Cortex-R5有一个CPSR和5个SPSR（SPSR_fiq，SPSR_svc，SPSR_abt，SPSR_irq和SPSR_und）</p>
+<p><img src="/post/4f4982c3/image-20250430201820043-6015733-6156443.png" alt="image-20250430201820043"></p>
+<ul>
+<li><p>其中I、F位表示中断屏蔽状态位，如果置位说明对应的中断被屏蔽</p>
+</li>
+<li><p>其中M[4:0]表示当前CPU运行模式：</p>
+<p> ​	<img src="/post/4f4982c3/image-20250502113214979.png" alt="image-20250502113214979"></p>
+<p> ​	在User模式下可以读M[4:0]，但是不能写，写操作无效</p>
+<p> ​	在其他特权模式下可以读写并完成状态的切换，但是如果写入非法值的话会默认进入System模式</p>
+<ul>
+<li><p>该寄存器的32位可以分为四个8bits的位域</p>
+<p>  bit[31:24] – 条件标志域，用 <strong>f</strong> 表示</p>
+<p>  bit[23:16] – 状态位域，用 <strong>s</strong> 表示</p>
+<p>  bit[15:8] – 扩展位域，用 <strong>x</strong> 表示</p>
+<p>  bit[7:0] – 控制位域，用 <strong>c</strong> 表示</p>
+<p>  所以在操作cpsr&#x2F;spsr的时候，加上cxsf等标记，就等于操作对应的位域了。例如：</p>
+<p>  msr spsr_cxsf, r5 —- 将r5的值写入spsr中</p>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="二、异常处理"><a href="#二、异常处理" class="headerlink" title="二、异常处理"></a>二、异常处理</h1><p><img src="/post/4f4982c3/image-20250430202332367-6156751.png" alt="image-20250430202332367"></p>
+<p>​	<img src="/post/4f4982c3/image-20250430202346900-6156776.png" alt="image-20250430202346900">        </p>
+<p>​	进入Exception时：</p>
+<p>​	1、保存异常返回地址到R14（LR）中，也就是当前地址到下一条指令地址，参照上图。</p>
+<p>​		•   ARM state：IA + 4 &#x2F; IA + 8</p>
+<p>​		•   Thumb state：IA + 2&#x2F; IA + 4 &#x2F; IA + 8</p>
+<p>​	2、拷贝CPSR到SPSR，这里有可能会在拷贝之前改变IT位域，来保证返回时正常</p>
+<p>​	3、修改CPSR的状态，例如IT位域，mode位域，E&#x2F;T位域（根据SCTLR）</p>
+<p>​	4、从vector table中找到对应的入口地址，赋给PC</p>
+<p>​	</p>
+<p>​	【进入异常时，CPU会自动关闭中断】</p>
+<p>​	</p>
+<p>​	退出Exception时：</p>
+<p>​	1、赋予正常的PC值，LR - offset（2&#x2F;4&#x2F;8）</p>
+<p>​		•  SUBS pc， R14__，#4 — 类似于这种</p>
+<p>​	2、从SPSR恢复CPSR</p>
+<p>​	这边有几个机制来助力于减少中断响应时间：</p>
+<p>​		•  LIL：Low Interrupt Latency，默认使能，SCTLR寄存器的FI bit[21]， Read-as-one</p>
+<p>​		•  VIC：Vectored Interrupt Controller</p>
+<p>​		•  NMI</p>
+<p>​	Exception Vectors</p>
+<p><img src="/post/4f4982c3/image-20250430202733591-6156810.png" alt="image-20250430202733591"></p>
+<p>​	VIM：</p>
+<p><img src="/post/4f4982c3/image-20250430202902889-6156814.png" alt="image-20250430202902889"></p>
+<h1 id="三、MPU相关"><a href="#三、MPU相关" class="headerlink" title="三、MPU相关"></a>三、MPU相关</h1><p>​	具体可以参考《ARM® Architecture Reference Manual ARMv7-A and ARMv7-R edition》 和 《Cortex™-R5 TRM》。</p>
+<p>​	内核的保护：只能由内核访问，包括code和data</p>
+<p>​	应用的保护：应用可访问自己的代码和数据，但应用间相互隔离，但目前无法对用户的code进行区分。</p>
+<p>​	首先可以通过MPU Type Register获取芯片支持的regions数。（0、12、16三种规格）</p>
+<p><img src="/post/4f4982c3/image-20250430203015492-6156824.png" alt="image-20250430203015492"></p>
+<p><img src="/post/4f4982c3/image-20250430203029315-6156827.png" alt="image-20250430203029315"></p>
+<p>​	配置时，主要针对每个region设置必要的属性：</p>
+<p><img src="/post/4f4982c3/image-20250430203057858-6156831.png" alt="image-20250430203057858"></p>
+<p>​	其中base address与region size的要求与<a href="/post/7d4db06d" title="Cortex-M7架构">Cortex-M7架构</a>类似，属性设置如下：</p>
+<p>​	<img src="/post/4f4982c3/image-20250430203156082-6156834.png" alt="image-20250430203156082"></p>
+<p><img src="/post/4f4982c3/image-20250430203212668-6156856.png" alt="image-20250430203212668"></p>
+<ul>
+<li><p>权限位设置</p>
+<p>  <img src="/post/4f4982c3/image-20250430203248217-6156860.png" alt="image-20250430203248217"></p>
+</li>
+</ul>
+<h1 id="四、FPU相关"><a href="#四、FPU相关" class="headerlink" title="四、FPU相关"></a>四、FPU相关</h1><p>​	Cortex-R5支持VFPv3-D16，FPU有很多版本种类（v3，v5，单精度，双精度等），每个版本的操作方式和寄存器个数都不太一样，所以适配时需要确认芯片的FPU版本。</p>
+<ul>
+<li>寄存器组：</li>
+</ul>
+<p>​	<img src="/post/4f4982c3/image-20250430203346296-6156864.png" alt="image-20250430203346296"></p>
+<ul>
+<li><p>控制寄存器：</p>
+<p>  <img src="/post/4f4982c3/image-20250430203434759-6156871.png" alt="image-20250430203434759"></p>
+<p>  <img src="/post/4f4982c3/image-20250430203449930-6156875.png" alt="image-20250430203449930"></p>
+<p>  ​	根据Table 11-3来看，在特权模式下，可以通过fpexc的en位来判断是否开启了FPU，进而确定是否需要做D寄存器的保存和恢复。目前通过宏控来确定。</p>
+</li>
+</ul>
+<h1 id="五、汇编操作"><a href="#五、汇编操作" class="headerlink" title="五、汇编操作"></a>五、汇编操作</h1><ul>
+<li><p>ldr是从存储器到寄存器的加载Load指令，ldr r1, [r2]，从r2的内存地址处读取4字节到r1寄存器中</p>
+<p>  ldm是加载到多个寄存器，ldm r0!, {r4-r7} ，其实是个出栈操作，将r0开始的“堆栈”数据，批量赋值给r4，r5，r6，r7。该指令不会回写[r0]。常规来说，此处的r0换成sp（r13)</p>
+<p>  ldmfd Rn{!}, {reg list}{^} — 以Rn为基址，取值写入reg list中，^表示写入的是UserMode下的reglist。！表示最后的地址，回写到Rn中。吐栈操作。</p>
+</li>
+<li><p>str是从寄存器到存储器到存储Store指令</p>
+<p>  stm指令是存储到多个存储器的指令。</p>
+<p>  stmfd r13！，{r1, r2, r3} 其中fd表示full stack descending；!表示最后的地址写回到R13中，将R1，R2，R3三个寄存器的值压入到栈，ARM默认高位寄存器先入栈，压栈操作。</p>
+<p>  <img src="/post/4f4982c3/image-20250502113916313.png" alt="image-20250502113916313"></p>
+<ul>
+<li><p>堆栈有两种生长方式：向上生长（像高地址方向生长，称为递增堆栈），向下生长（向低地址方向生长，称为递减堆栈）</p>
+</li>
+<li><p>堆栈指针指向最后压入数据的有效数据项，称为满堆栈（Full stack）</p>
+</li>
+<li><p>堆栈指针指向下一个数据项放入的空位置，称为空堆栈（empty stack）</p>
+<p>  ARM下支持所有的四种组合：满递增（FA），满递减（FD），空递增（EA），空递减（ED）</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>​		<img src="/post/4f4982c3/image-20250430203711718-6156904.png" alt="image-20250430203711718"></p>
+<ul>
+<li><p>ldmfd SP!, {lr, pc}^ — 指令执行完，PC跳转之前，会把spsr的值自动拷贝到cpsr中，一般用于异常模式返回时</p>
+<ul>
+<li>! — 用于控制基址+变址寻址时，最终新地址是否进行回写操作</li>
+<li>^ —- 分两种情况：1、有对pc赋值时，作用是pc跳转前spsr赋值给cpsr；2、没有对pc赋值时，表示操作的是User模式下的寄存器。该后缀标记不能在user&#x2F;sys模式下使用</li>
+</ul>
+</li>
+<li><p>and指令 — 与操作</p>
+<p>  orr指令 — 或操作</p>
+</li>
+</ul>
+<blockquote>
+<p><strong>！</strong>用来控制 基址变址 操作后的新地址是否进行回写操作，例如：</p>
+<p>​	ldr lr，[sp, #S_PC]! 表示ldr指令执行操作之后，sp &#x3D; sp + S_PC</p>
+<p>​	ldmfd sp!, {r5} 表示执行完从sp中恢复一个寄存器到r5后，sp &#x3D; sp + 4</p>
+<p>​	读写多个数据(ldr 、ldm) &#x2F; （str，stm）</p>
+<p><strong>^</strong>分两种情况，对PC进行赋值改变的，和，没有修改PC值的。不能在User和Sys模式下使用。</p>
+<ul>
+<li><p>（不对PC进行修改情况下）若列表中没有PC，则加载&#x2F;存储的是用户模式寄存器，而不是当前模式。</p>
+<p>  可用于中断中访问用户模式中的重名寄存器。表示操作的寄存器是用户态的User模式下的数据。</p>
+<p>  ldm r5, {sp, lr}^  &#x2F;&#x2F;user sp, lr — 从r5地址处恢复两个数据到user模式中的sp和lr，而不是当前模式下的sp和lr</p>
+</li>
+<li><p>（修改PC时）若在LDM指令用寄存器列表中含有pc时，会附加将SPSR拷贝到CPSR的动作。 可以引起模式切换，通常用于中断返回，这种情况用户模式不能用，因为用户模式没有SPSR。</p>
+</li>
+</ul>
+</blockquote>
+<p>ldmfd Rn{!}, {reglist}{^}</p>
+<p>以Rn为基址，取值写入寄存器列表</p>
+<p>stmfd Rn{!}, {reglist}{^}</p>
+<p>把寄存器列表中数据依次写入Rn为基址的内存中</p>
+<p>stmfd sp！，{r0-r3, lr} —先把SP &#x3D; sp - 4*5，然后依次把r0 r1 r2 r3 lr入栈 </p>
+<p><em>寄存器列表的使用规则：寄存器标号小的对应于内存中低地址单元；编号大的对应于内存中高地址单元</em></p>
+<p><strong>cps</strong></p>
+<p>在特权模式下（除User模式，其他的几个模式都是特权模式），可以通过CPS指令直接修改CPSR寄存器的Mode[4:0]和开关中断，也即 <strong>c</strong> 位域。</p>
+<p>cps #SVC_MODE – 进入svc模式，修改M位域</p>
+<p>cpsie i – 开启irq</p>
+<p>cpsie ie – 开启irq和fiq</p>
+<p>cpsid iaf – 关闭中断</p>
+<p>cpsid i, #MODE_SVC — 关闭中断并进入svc模式</p>
+<p><strong>RFE &amp; SRS</strong></p>
+<p>rfe指令，会自动从寄存器中恢复PC和CPSR：先pop pc，再pop cpsr</p>
+<p>“set pc&#x3D;lr”</p>
+<p>“set cpsr&#x3D;spsr”</p>
+<p><img src="/post/4f4982c3/image-20250430204109174-6156908.png" alt="image-20250430204109174"></p>
+<p><img src="/post/4f4982c3/image-20250430204122497-6156911.png" alt="image-20250430204122497"></p>
+<p><img src="/post/4f4982c3/image-20250430204135194-6156914.png" alt="image-20250430204135194"></p>
+<p>srs指令会自动将lr与spsr保存到 target mode下的栈中。例如在irq mode下：srsdb sp!, #SVC_MODE</p>
+<p>表示将irq mode下的lr与spsr保存到svc mode 下的sp中：</p>
+<p>即，[sp_svc + 4] &#x3D; lr</p>
+<p>[sp_svc + 8] &#x3D; spsr</p>
+<p><img src="/post/4f4982c3/image-20250430204203866-6156917.png" alt="image-20250430204203866"></p>
+<p><img src="/post/4f4982c3/image-20250430204216308-6156920.png" alt="image-20250430204216308"></p>
+<p>​	目前Cortex-R5和Cortex-M都是使用满递减栈，所以一般使用stmfd&#x2F;ldmfd即可。不用单独去记stmia等这些针对具体操作的行为。但从效果来看：</p>
+<p>​	stmdb和ldmia是一套满减栈的操作：</p>
+<p>​	stmdb &#x3D; stmfd</p>
+<p>​	stmia &#x3D; stm</p>
+<p>​	ldmia &#x3D; ldmfd</p>
+<p>​	而且一般stmfd&#x2F;ldmfd这套操作常常使用sp来作为base寄存器，而db&#x2F;ia的话，一般使用常寄存器作为base。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+<script src="https://sdk.jinrishici.com/v2/browser/jinrishici.js" charset="utf-8"></script>
+<script>
+  jinrishici.load((result) => {
+    let jrsc = document.getElementById('jrsc');
+    const data = result.data;
+    let author = data.origin.author;
+    let title = '《' + data.origin.title + '》';
+    let content = data.content.substr(0, data.content.length - 1);
+    let dynasty = data.origin.dynasty.substr(0, data.origin.dynasty.length - 1);
+    jrsc.innerText = content + ' @ ' + dynasty + '·' + author + title;
+  });
+</script>
+<div style="text-align: center"><span id="jrsc" >正在加载今日诗词....</span></div>
+
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/6eaabfc2" rel="prev" title="黑群晖DSM7.0引导镜像制作">
+                  <i class="fa fa-angle-left"></i> 黑群晖DSM7.0引导镜像制作
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/7d4db06d" rel="next" title="Cortex-M7架构">
+                  Cortex-M7架构 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Liu Bing</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">20k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:13</span>
+  </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>

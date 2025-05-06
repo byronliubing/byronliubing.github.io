@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.staticfile.org/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.staticfile.org/fancyapps-ui/5.0.36/fancybox/fancybox.css" integrity="sha256-zM8WXtG4eUn7dKKNMTuoWZub++VnSfaOpA/8PJfvTBo=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"byronliubing.gitee.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.23.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="此篇将记录一些关于ARMv8-A架构相关的知识及使用说明。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ARMv8-A架构">
+<meta property="og:url" content="https://byronliubing.gitee.io/post/72083c9f">
+<meta property="og:site_name" content="Byron Liu">
+<meta property="og:description" content="此篇将记录一些关于ARMv8-A架构相关的知识及使用说明。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/image-20250502191251410.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/image-20250502191331617.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/image-20250502191546188.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/image-20250502191614031.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/image-20250502191654266.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/image-20250502192010477.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/image-20250502192022868.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/image-20250502192045514.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/image-20250502192053371.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/image-20250502193636290.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/image-20250502192205852.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/image-20250502192246005.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/image-20250502192823900.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/image-20250502192828753.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/image-20250502192908659.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/image-20250502192913459.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/image-20250502192923169.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/image-20250502193037344.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/image-20250502193055041.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/image-20250502193144872.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/image-20250502193434056.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/image-20250502193445675.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/image-20250502193601647.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/image-20250502194530676.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/image-20250502194544676.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/image-20250502194549629.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/image-20250502194641669.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/image-20250502194653955.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/image-20250502194154305.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/image-20250502194314070.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/image-20250502194329209.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/image-20250502194334960.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/1716969438619-d414fe00-f9f7-4507-9efb-10c553bd5308.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/1740994714344-341bc9fd-d6f5-4547-8ae6-cf7808b6f8f4.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/1740994763347-31b64d23-58b7-48a6-9a8b-a323a2a27b33.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/1716970282495-b25f9388-8fe9-433c-b912-8c890f16e315.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/1741002344926-81056755-d18b-4e53-848c-3ecc3d81ae2c.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/1675768537091-3ba70fba-d544-45a8-978f-a0c5f0dc29b7.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/1675768614550-c937897c-41ec-4e34-b7aa-0ac375c1cb1c.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/1741058648634-0b86d2bb-988a-4587-ae40-15ca3dde6455.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/1675769807289-856d5b0d-e781-4f8b-8ad5-81b403502046.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/image-20250502192124682.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/image-20250502193739253.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/image-20250502194211034.png">
+<meta property="og:image" content="https://byronliubing.gitee.io/post/72083c9f/image-20250502194223604.png">
+<meta property="article:published_time" content="2025-05-02T11:11:22.000Z">
+<meta property="article:modified_time" content="2025-05-06T06:22:51.479Z">
+<meta property="article:author" content="Liu Bing">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://byronliubing.gitee.io/post/72083c9f/image-20250502191251410.png">
+
+
+<link rel="canonical" href="https://byronliubing.gitee.io/post/72083c9f.html">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://byronliubing.gitee.io/post/72083c9f","path":"post/72083c9f.html","title":"ARMv8-A架构"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>ARMv8-A架构 | Byron Liu</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdn.staticfile.org/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+  <script src="https://cdn.staticfile.org/fancyapps-ui/5.0.36/fancybox/fancybox.umd.js" integrity="sha256-hiUEBwFEpLF6DlB8sGXlKo4kPZ46Ui4qGpd0vrVkOm4=" crossorigin="anonymous" defer></script>
+  <script src="https://cdn.staticfile.org/pangu/4.0.7/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+  <script src="/js/third-party/fancybox.js" defer></script>
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Byron Liu</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">1</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">10</span></a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B"><span class="nav-number">1.</span> <span class="nav-text">一、启动流程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#BL2%E4%B8%8EUBOOT%E7%9A%84SPL%E5%85%B3%E7%B3%BB"><span class="nav-number">1.1.</span> <span class="nav-text">BL2与UBOOT的SPL关系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%B7%E5%90%AF%E5%8A%A8%E6%97%B6"><span class="nav-number">1.2.</span> <span class="nav-text">冷启动时</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%AF%84%E5%AD%98%E5%99%A8%E7%9B%B8%E5%85%B3%E8%AF%B4%E6%98%8E"><span class="nav-number">2.</span> <span class="nav-text">二、寄存器相关说明</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E6%97%B6%E6%A0%88"><span class="nav-number">2.1.</span> <span class="nav-text">运行时栈</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E4%B8%AD%E6%96%AD%E5%A4%84%E7%90%86"><span class="nav-number">3.</span> <span class="nav-text">三、中断处理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%AD%E6%96%AD%E5%8F%B7%E5%AE%9A%E4%B9%89"><span class="nav-number">3.1.</span> <span class="nav-text">中断号定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%A4%E7%A7%8D%E4%B8%AD%E6%96%AD%E6%A8%A1%E5%BC%8F"><span class="nav-number">3.2.</span> <span class="nav-text">两种中断模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%AD%E6%96%AD%E5%AE%8C%E6%88%90%E6%A8%A1%E5%BC%8F"><span class="nav-number">3.3.</span> <span class="nav-text">中断完成模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%AD%E6%96%AD%E5%B5%8C%E5%A5%97%E8%AF%B4%E6%98%8E"><span class="nav-number">3.4.</span> <span class="nav-text">中断嵌套说明</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%85%B3%E4%BA%8E%E5%BC%82%E5%B8%B8%E7%9A%84%E8%AF%B4%E6%98%8E"><span class="nav-number">4.</span> <span class="nav-text">四、关于异常的说明</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%82%E5%B8%B8%E8%BF%94%E5%9B%9E"><span class="nav-number">4.1.</span> <span class="nav-text">异常返回</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E7%B3%BB%E7%BB%9F%E6%97%B6%E9%92%9F"><span class="nav-number">5.</span> <span class="nav-text">五、系统时钟</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E3%80%81ATF%E7%BC%96%E8%AF%91%E5%8F%8A%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B"><span class="nav-number">6.</span> <span class="nav-text">六、ATF编译及启动流程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1%E3%80%81Uboot%E4%B8%8B%E8%BD%BD%E5%8F%8A%E7%BC%96%E8%AF%91"><span class="nav-number">6.1.</span> <span class="nav-text">1、Uboot下载及编译</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81ATF%E4%B8%8B%E8%BD%BD%E5%8F%8A%E7%BC%96%E8%AF%91"><span class="nav-number">6.2.</span> <span class="nav-text">二、ATF下载及编译</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%86%85%E6%A0%B8%E7%BC%96%E8%AF%91"><span class="nav-number">6.3.</span> <span class="nav-text">三、内核编译</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E7%BC%96%E8%AF%91"><span class="nav-number">6.4.</span> <span class="nav-text">四、文件系统编译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E5%BC%8F%E4%B8%80%EF%BC%9A%E4%BD%BF%E7%94%A8buildroot"><span class="nav-number">6.4.1.</span> <span class="nav-text">方式一：使用buildroot</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E5%BC%8F%E4%BA%8C%EF%BC%9A%E4%BD%BF%E7%94%A8mkimg%E5%88%B6%E4%BD%9C"><span class="nav-number">6.4.2.</span> <span class="nav-text">方式二：使用mkimg制作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E5%9C%A8Qemu%E4%B8%AD%E5%90%AF%E5%8A%A8"><span class="nav-number">6.5.</span> <span class="nav-text">五、在Qemu中启动</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E9%85%8D%E7%BD%AE"><span class="nav-number">6.5.1.</span> <span class="nav-text">网络配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8uboot%E5%90%AF%E5%8A%A8"><span class="nav-number">6.6.</span> <span class="nav-text">使用uboot启动</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B4%E6%8E%A5%E5%90%AF%E5%8A%A8kernel"><span class="nav-number">6.7.</span> <span class="nav-text">直接启动kernel</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8ATF%E5%90%AF%E5%8A%A8"><span class="nav-number">6.8.</span> <span class="nav-text">使用ATF启动</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%9C%A8uboot%E4%B8%AD%E8%B0%83%E8%AF%95"><span class="nav-number">6.9.</span> <span class="nav-text">六、在uboot中调试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8Bfdt"><span class="nav-number">6.9.1.</span> <span class="nav-text">查看fdt</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%B6%E4%BD%9C%E5%90%AF%E5%8A%A8%E9%95%9C%E5%83%8F"><span class="nav-number">6.10.</span> <span class="nav-text">制作启动镜像</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E5%BC%8F%E4%B8%80%EF%BC%9A%E4%BD%BF%E7%94%A8flash%EF%BC%88%E5%8F%AF%E9%80%89%EF%BC%89"><span class="nav-number">6.10.1.</span> <span class="nav-text">方式一：使用flash（可选）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E5%BC%8F%E4%BA%8C%EF%BC%9A%E4%BD%BF%E7%94%A8qemu%E5%8F%82%E6%95%B0%E4%BC%A0%E9%80%92"><span class="nav-number">6.10.2.</span> <span class="nav-text">方式二：使用qemu参数传递</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%9D%E5%AD%98qemu-%E5%90%AF%E5%8A%A8%E9%85%8D%E7%BD%AE-%E4%B8%8D%E5%A4%AA%E5%A5%BD%E4%BD%BF%EF%BC%9F"><span class="nav-number">6.10.3.</span> <span class="nav-text">保存qemu 启动配置(不太好使？)</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E7%89%B9%E6%AE%8A%E6%8C%87%E4%BB%A4%E8%AF%B4%E6%98%8E"><span class="nav-number">7.</span> <span class="nav-text">七、特殊指令说明</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E%E8%B7%B3%E8%BD%AC%E6%8C%87%E4%BB%A4"><span class="nav-number">7.1.</span> <span class="nav-text">关于跳转指令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ldr%E6%8C%87%E4%BB%A4%E4%B8%8Eldr%E4%BC%AA%E6%8C%87%E4%BB%A4%EF%BC%88%E5%B8%A6-%E5%8F%B7%E7%9A%84%EF%BC%89%EF%BC%9A"><span class="nav-number">7.2.</span> <span class="nav-text">ldr指令与ldr伪指令（带&#x3D;号的）：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pre-index-post-index%E3%80%82"><span class="nav-number">7.3.</span> <span class="nav-text">pre-index&#x2F;post-index。</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CurrentEL%E8%AF%B4%E6%98%8E"><span class="nav-number">7.4.</span> <span class="nav-text">CurrentEL说明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#VHE%E8%AF%B4%E6%98%8E"><span class="nav-number">7.5.</span> <span class="nav-text">VHE说明</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Liu Bing</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">10</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://byronliubing.gitee.io/post/72083c9f">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liu Bing">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Byron Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="ARMv8-A架构 | Byron Liu">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ARMv8-A架构
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-05-02 19:11:22" itemprop="dateCreated datePublished" datetime="2025-05-02T19:11:22+08:00">2025-05-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-05-06 14:22:51" itemprop="dateModified" datetime="2025-05-06T14:22:51+08:00">2025-05-06</time>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>5.2k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>19 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>此篇将记录一些关于ARMv8-A架构相关的知识及使用说明。</p>
+<p><img src="/post/72083c9f/image-20250502191251410.png" alt="image-20250502191251410"></p>
+<span id="more"></span>
+
+<h1 id="一、启动流程"><a href="#一、启动流程" class="headerlink" title="一、启动流程"></a>一、启动流程</h1><p>在支持TrustZone时，需要ATF的支持，ATF的流程是启动安全世界的，用来保证后续启动流程的鉴权是安全的。其启动流程大致为分为：</p>
+<p><img src="/post/72083c9f/image-20250502191331617.png" alt="image-20250502191331617"></p>
+<p>其中BL1为BOOTROM程序固化在芯片内部，芯片出产后就不能再修改，所以一般不涉及常规外设初始化等易变动的事情。但是会根据芯片所支持的Flash列表来集成对应的Flash驱动，这样可以从Flash中加载后续的固件到SRAM中运行，即下一个固件为BL2，也包括固件验签、安全启动等流程。</p>
+<p>BL2运行在SecureWorld的El1（记作S-EL1），其主要初始化DDR等设备，然后加载后续的BL31 BL32 BL33到DDR中运行。由于BL2运行在S-EL1，所以BL1中还需要完成“SMC”指令的vector实现，否则无法返回。</p>
+<p>BL31是runtime services，需要在内存中驻留的，而BL1 BL2用完就可以释放了，运行在EL3中。该层级中提供需要处理很多事情，包括页表创建、cache使能、对应vector_el3的配置级实现、EL3的中断路由和上下文切换等。</p>
+<p>BL32是TRUST-OS，运行在S-EL1，提供安全世界的操作系统，用于完成配置的安全业务</p>
+<p>BL33则是我们熟知的UBOOT，然后UBOOT加载NS-EL1的OS继续运行。</p>
+<h2 id="BL2与UBOOT的SPL关系"><a href="#BL2与UBOOT的SPL关系" class="headerlink" title="BL2与UBOOT的SPL关系"></a>BL2与UBOOT的SPL关系</h2><p>spl被称为secondary program loader，在启动链中一般由bootrom加载而作为第二级启动镜像（bl2），它主要用于完成一些基础模块和ddr的初始化，以及加载下一级镜像uboot。由于spl需要被加载到sram中执行，对于有些sram size比较小的系统，可能无法放入整个spl镜像，tpl即是为了解决该问题引入的。加入了tpl之后，可将spl的功能进一步划分为两部分，如spl包含ddr初始化相关代码，而tpl包含镜像加载相关驱动，从而减少spl镜像的size。此时启动流程可被设计为如下方式： bootrom –&gt; spl（init ddr） –&gt; bootrom –&gt; tpl（load and run uboot）–&gt; uboot</p>
+<p>当然很多时候tpl是可以省略的，即模型变为：</p>
+<p>bootrom –&gt; spl（init ddr） –&gt; uboot —&gt; Linux</p>
+<p>应对某些需要快速启动的场景，模型甚至可以升级为：（uboot也不需要，由Linux接管驱动初始化等）</p>
+<p>bootrom –&gt; spl（init ddr） –&gt; Linux</p>
+<p>如果系统需要支持secure核non secure两种安全状态的话，则必须先从secure空间开始启动，此时ATF貌似就变得必须了。</p>
+<h2 id="冷启动时"><a href="#冷启动时" class="headerlink" title="冷启动时"></a>冷启动时</h2><p>处理器上电复位后，运行在何种执行状态是如何决定的呢？是由处理器内部硬件AA64nAA32决定的，这个信号是芯片设计时进行配置的。在处理器上电复位时，通过采样 AA64nAA32的信号值决定进入对应的执行状态。我们在ARMv8-A架构处理器的TRM手册中可以具体了解AA64nAA32信号。（A.4 Configuration signals章节）</p>
+<p><img src="/post/72083c9f/image-20250502191546188.png" alt="image-20250502191546188"></p>
+<ul>
+<li>对于AArch32执行状态，入口地址由寄存器SCTLR.V值决定，而SCTLR.V值由处理器内部硬件信号VINITHI 决定的，这个信号是芯片设计时进行配置的。</li>
+</ul>
+<p><img src="/post/72083c9f/image-20250502191614031.png" alt="image-20250502191614031"></p>
+<ul>
+<li><p>对于AArch64执行状态，入口地址由处理器内部硬件信号RVBARADDR决定，这个信号是芯片设计时进行配置的。在处理器上电复位时，通过采样RVBARADDR的信号值，读入到RVBAR_EL3寄存器，获取入口地址。一般会把内部BOOTROM固化到RVBARADDR处，这样上电之后就直接跳转到BOOTROM中运行了。</p>
+<p>  <img src="/post/72083c9f/image-20250502191654266.png" alt="image-20250502191654266"></p>
+</li>
+</ul>
+<h1 id="二、寄存器相关说明"><a href="#二、寄存器相关说明" class="headerlink" title="二、寄存器相关说明"></a>二、寄存器相关说明</h1><p>armv8上分为非特权级EL0，和特权级EL1</p>
+<p>在EL0使用sp_el0，在EL1可以使用sp_el0也可以使用sp_el1，为了兼容性目前使用sp_el1</p>
+<p>通用寄存器：</p>
+<p>X0 – X30 (W0 – W30)</p>
+<p>特殊寄存器：</p>
+<p><img src="/post/72083c9f/image-20250502192010477.png" alt="image-20250502192010477"></p>
+<p>异常返回时，通过ELR寄存器返回，通常子函数的话，使用LR（X30），同时X29寄存器也是栈帧指针寄存器。所以一般C函数调用时都需要保存X29 X30寄存器。</p>
+<p><img src="/post/72083c9f/image-20250502192022868.png" alt="image-20250502192022868"></p>
+<h2 id="运行时栈"><a href="#运行时栈" class="headerlink" title="运行时栈"></a>运行时栈</h2><p><img src="/post/72083c9f/image-20250502192045514.png" alt="image-20250502192045514"></p>
+<p><img src="/post/72083c9f/image-20250502192053371.png" alt="image-20250502192053371"></p>
+<h1 id="三、中断处理"><a href="#三、中断处理" class="headerlink" title="三、中断处理"></a>三、中断处理</h1><p>GICv3整体框架：</p>
+<p><img src="/post/72083c9f/image-20250502193636290.png" alt="image-20250502193636290"></p>
+<h2 id="中断号定义"><a href="#中断号定义" class="headerlink" title="中断号定义"></a>中断号定义</h2><p><img src="/post/72083c9f/image-20250502192205852.png" alt="image-20250502192205852"></p>
+<ul>
+<li>本来1024–8191为保留中断号，在该基础上，引出两个扩展PPI（64个）与扩展SPI（1024个），但对一般SOC而言，用不了这么多</li>
+</ul>
+<p><img src="/post/72083c9f/image-20250502192246005.png" alt="image-20250502192246005"></p>
+<ul>
+<li><p>上述描述比较清楚了，当GIC发送的fiq中断路由时，el3需要做世界切换，此时获取到的INTID值为上述的。然后运行在EL3的BL31中的对应中断处理函数，需要判断该INTID并做对应的切换操作</p>
+</li>
+<li><p>关于NMI：</p>
+<ul>
+<li>目前只有GICv3.3和GICv4.2中添加了支持—NMIs are only presented as having superpriority when being presented to their owning Security state and Exception level.</li>
+<li>Group 0 interrupts cannot be configured as NMIs.（到<strong>EL3</strong>的中断）</li>
+</ul>
+</li>
+</ul>
+<h2 id="两种中断模式"><a href="#两种中断模式" class="headerlink" title="两种中断模式"></a>两种中断模式</h2><p>目前PE中支持两种中断模式：IRQ和FIQ。在ARMv8之前，通常表示两种不同优先级的中断：即FIQ表示快速中断，优先级比IRQ较高。但在ARMv8中，任意时刻只会有一个被触发，要么IRQ要么FIQ，通常用来表示中断路由方式。</p>
+<p><img src="/post/72083c9f/image-20250502192823900.png" alt="image-20250502192823900"></p>
+<p><img src="/post/72083c9f/image-20250502192828753.png" alt="image-20250502192828753"></p>
+<ul>
+<li>外设直接set or clear Controller的寄存器。NOTE: LPIs are only supported when GICD_CTLR.ARE_NS&#x3D;&#x3D;1</li>
+</ul>
+<p>中断触发的两种方式：边沿触发与电平触发</p>
+<p><img src="/post/72083c9f/image-20250502192908659.png" alt="image-20250502192908659"></p>
+<p><img src="/post/72083c9f/image-20250502192913459.png" alt="image-20250502192913459"></p>
+<p>中断group：</p>
+<p><img src="/post/72083c9f/image-20250502192923169.png" alt="image-20250502192923169"></p>
+<ul>
+<li><p>GICD_CTLR.DS &#x3D;&#x3D; 0：Two Security states (Secure and Non-secure) are supported</p>
+</li>
+<li><p>GICD_CTLR.DS &#x3D;&#x3D; 1：Only a single Security state is supported</p>
+<p>  （Disable Security. 只有在secure 状态下可操作该bit）</p>
+</li>
+<li><p>GICv3可以触发两种中断信号IRQ和FIQ，对中断分组的目的就是使不同group的中断，在不同状态下可分别被路由到IRQ或FIQ上，在AARCH64状态下，中断的路由方式如下：</p>
+<p>  <img src="/post/72083c9f/image-20250502193037344.png" alt="image-20250502193037344"></p>
+<p>  上述表比较重要，承载着中断路由的配置方式：</p>
+<p>  <img src="/post/72083c9f/image-20250502193055041.png" alt="image-20250502193055041"></p>
+<p>  当一个non secure el1的中断触发时（配置的为Non_Secure Group 1）：</p>
+<p>  1、当前CPU处于Secure EL1，根据上表，触发FIQ信号。需要先路由到EL3，然后转给NS EL1处理</p>
+<p>  2、当前CPU处于NS EL1时，触发IRQ信号，不用额外路由，直接处理即可</p>
+<p>  3、当前CPU处于EL3，触发FIQ信号，需要路由到EL3，然后转给NS EL1处理</p>
+<p>  针对这种情况，保持SCR.IRQ &#x3D; 0; SCR_FIQ&#x3D;1即可。</p>
+</li>
+</ul>
+<p>中断路由：</p>
+<p>安全世界与非安全世界的寄存器很多都是bank的，例如VBAR_EL1和VBAR_EL2，所以不存在冲突的情况。</p>
+<p>关于中断路由的问题，可以根据GIC的配置对PE发出IRQ或者FIQ中断，一般FIQ中断都是路由在EL3的，这是怎么处理的呢？</p>
+<p>1、从EL3返回时，会对SCR.NS位进行操作，选择回到S或NS世界</p>
+<p>2、在处理FIQ也一样，GIC发送FIQ至EL3时，根据BL31设置的vector_el3跳转到对应的FIQ处理函数中，此时读到的GIC INTID是一个特殊值（1020，1021等），根据该值需要跳转到对应的handler。每类INTR_TYPE注册时都会计算SCR值，更新NS位。</p>
+<p>3、然后返回到注册的handler中，此时需要注意，在进入EL3的VECTOR时已经关闭了DAIF，但在EL3返回到lower EL时，会根据spsr_el3值可能重新打开中断，但是eret返回时的PC值已经指定。（其实就是模拟了一次eret，至于异常进入时的pc（elr_el3）和cpsr（spsr_el3）都是在注册时handler中指定的或实时读取的）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*******************************************************************************</span></span><br><span class="line"><span class="comment"> * Constants for the types of interrupts recognised by the IM framework</span></span><br><span class="line"><span class="comment"> ******************************************************************************/</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> INTR_TYPE_S_EL1         U(0)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> INTR_TYPE_EL3           U(1)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> INTR_TYPE_NS            U(2)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> MAX_INTR_TYPES          U(3)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> INTR_TYPE_INVAL         MAX_INTR_TYPES</span></span><br><span class="line">通过register_interrupt_type_handler对中断类型进行注册：</span><br><span class="line">rc = register_interrupt_type_handler(INTR_TYPE_EL3, waiting_dvfs, flags);</span><br><span class="line">切换示例，注意cm_set_elr_spsr_el3和SMC_RET0(handle);</span><br><span class="line">ret = register_interrupt_type_handler(INTR_TYPE_S_EL1,</span><br><span class="line">                          trusty_fiq_handler,</span><br><span class="line">                          flags);</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">uint64_t</span> <span class="title function_">trusty_fiq_handler</span><span class="params">(<span class="type">uint32_t</span> id,</span></span><br><span class="line"><span class="params">				   <span class="type">uint32_t</span> flags,</span></span><br><span class="line"><span class="params">				   <span class="type">void</span> *handle,</span></span><br><span class="line"><span class="params">				   <span class="type">void</span> *cookie)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">smc_args</span> <span class="title">ret</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">trusty_cpu_ctx</span> *<span class="title">ctx</span> =</span> get_trusty_ctx();</span><br><span class="line"></span><br><span class="line">	assert(!is_caller_secure(flags));</span><br><span class="line"></span><br><span class="line">	ret = trusty_context_switch(NON_SECURE, SMC_FC_FIQ_ENTER, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">	<span class="keyword">if</span> (ret.r0 != <span class="number">0U</span>) &#123;</span><br><span class="line">		SMC_RET0(handle);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (ctx-&gt;fiq_handler_active != <span class="number">0</span>) &#123;</span><br><span class="line">		INFO(<span class="string">&quot;%s: fiq handler already active\n&quot;</span>, __func__);</span><br><span class="line">		SMC_RET0(handle);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	ctx-&gt;fiq_handler_active = <span class="number">1</span>;</span><br><span class="line">	(<span class="type">void</span>)<span class="built_in">memcpy</span>(&amp;ctx-&gt;fiq_gpregs, get_gpregs_ctx(handle), <span class="keyword">sizeof</span>(ctx-&gt;fiq_gpregs));</span><br><span class="line">	ctx-&gt;fiq_pc = SMC_GET_EL3(handle, CTX_ELR_EL3);</span><br><span class="line">	ctx-&gt;fiq_cpsr = SMC_GET_EL3(handle, CTX_SPSR_EL3);</span><br><span class="line">	ctx-&gt;fiq_sp_el1 = read_ctx_reg(get_el1_sysregs_ctx(handle), CTX_SP_EL1);</span><br><span class="line"></span><br><span class="line">	write_ctx_reg(get_el1_sysregs_ctx(handle), CTX_SP_EL1, ctx-&gt;fiq_handler_sp);</span><br><span class="line">	cm_set_elr_spsr_el3(NON_SECURE, ctx-&gt;fiq_handler_pc, (<span class="type">uint32_t</span>)ctx-&gt;fiq_handler_cpsr);</span><br><span class="line"></span><br><span class="line">	SMC_RET0(handle);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="中断完成模式"><a href="#中断完成模式" class="headerlink" title="中断完成模式"></a>中断完成模式</h2><p>为了提高中断响应的实时性，GIC将中断完成分解为两个阶段：</p>
+<ul>
+<li>优先级重置（Priority drop）：将当前中断屏蔽的优先级进行重置，从而能够响应更低优先级的中断。</li>
+<li>中断无效（Deactivation）：将当前对应的中断状态置为Inactivate，从而可以重新响应该优先级的中断。</li>
+</ul>
+<p><img src="/post/72083c9f/image-20250502193144872.png" alt="image-20250502193144872"></p>
+<h2 id="中断嵌套说明"><a href="#中断嵌套说明" class="headerlink" title="中断嵌套说明"></a>中断嵌套说明</h2><p>​	目前GICv3实现中断嵌套需要两个条件：</p>
+<ul>
+<li><p>interrupt的priority必须高于 <strong>Priority Mask register (ICC_PMR_EL1)</strong> ，只有高于才能pending。</p>
+<p>  <em>Only interrupts with a higher priority than the value in this register are signaled to the PE.</em></p>
+</li>
+<li><p>pending interrupt的group priority必须高于<strong>Running Priority</strong>（<strong>ICC_RPR_EL1</strong>）</p>
+</li>
+</ul>
+<p>​	当PE响应acknowledges一个中断时，running priority会储存当前中断priority，running priority要么是当前active interrupt的group priority，要么是idle priority (0xFF）</p>
+<p><img src="/post/72083c9f/image-20250502193434056.png" alt="image-20250502193434056"></p>
+<p><img src="/post/72083c9f/image-20250502193445675.png" alt="image-20250502193445675"></p>
+<p>GICv3初始化时，将priority分成两部分：支持16层中断嵌套(可调，最高可以做到7bits，同时需要考虑中断嵌套层级以及栈大小）</p>
+<p><img src="/post/72083c9f/image-20250502193601647.png" alt="image-20250502193601647"></p>
+<h1 id="四、关于异常的说明"><a href="#四、关于异常的说明" class="headerlink" title="四、关于异常的说明"></a>四、关于异常的说明</h1><p><img src="/post/72083c9f/image-20250502194530676.png" alt="image-20250502194530676"></p>
+<ul>
+<li><p>异常时，会将PC及PSTATE保存到对应的EL_ELn及SPSR_ELn中，用于异常返回时恢复</p>
+<p>  <img src="/post/72083c9f/image-20250502194544676.png" alt="image-20250502194544676"></p>
+<p>  <img src="/post/72083c9f/image-20250502194549629.png" alt="image-20250502194549629"></p>
+</li>
+<li><p>The <em>Fault Address Register</em> (FAR_EL<em>n</em>) holds the faulting virtual address for all synchronous instruction and Data Aborts and alignment faults</p>
+</li>
+<li><p>The <em>Exception Syndrome Register</em> (ESR_EL<em>n</em>) gives information about the reasons for the exception</p>
+</li>
+<li><p>针对实现了EL2&#x2F;EL3的系统，中断是可以路由到更高的异常等级中处理，然后由高异常等级中的处理来分配。这也是实现Hypervisor的一种常用手段。将一些需要处理的中断发送到EL2，EL2初处理然后再分发到其他虚拟机中。各个虚拟机中可以直接使用vIRQ来实现</p>
+<p>  <img src="/post/72083c9f/image-20250502194641669.png" alt="image-20250502194641669"></p>
+</li>
+</ul>
+<p><img src="/post/72083c9f/image-20250502194653955.png" alt="image-20250502194653955"></p>
+<h2 id="异常返回"><a href="#异常返回" class="headerlink" title="异常返回"></a>异常返回</h2><p>ERET指令用于从异常处理流程中返回，在介绍异常返回流程之前，我们先看一下armv8异常跳转的流程。Armv8触发异常或中断后硬件将会执行以下操作：</p>
+<p>（1）将PSTATE寄存器的内容保存到SPSR_ELx中，其中x表示异常进入的异常等级，如smc异常将会陷入EL3，因此相应的寄存器就为SPSR_EL3</p>
+<p>（2）将异常处理完成后需要返回的地址保存在ELR_ELx中</p>
+<p>（3）设置中断和异常掩码DAIF，以关闭所有中断和异常</p>
+<p>（4）若异常是同步异常或SError中断，异常状态信息将被保存在ESR_ELx中，该信息可用于分析异常发生的原因</p>
+<p>（5）若异常为指令异常、数据异常或对齐错误等，则触发异常对应的内存地址将被保存到FAR_ELx寄存器中</p>
+<p>（6）栈指针切换为目标异常等级的栈指针寄存器SP_ELx（<strong>此处不管<strong><strong>ELx</strong></strong>时设置的<strong><strong>spsel</strong></strong>值是多少</strong>）</p>
+<p>（7）程序跳转到对应的异常处理入口，执行异常处理程序 在异常执行完成后，可通过ERET指令返回被异常中断程序的断点处继续执行，该指令将使硬件执行以下操作：</p>
+<p>（1）用SPSR_ELx寄存器的内容恢复PSTATE寄存器</p>
+<p>（2）用ELR_ELx寄存器的内容恢复PC值</p>
+<p>从以上流程可以看到，执行ERET指令后程序的执行流将由SPSR_ELx和ELR_ELx决定。因此，我们在执行镜像之间的跳转，只要在ERET之前将ELR_ELx设置为待跳转镜像的入口地址，并设置正确的SPSR_ELx即可完成。</p>
+<p><img src="/post/72083c9f/image-20250502194154305.png" alt="image-20250502194154305"></p>
+<h1 id="五、系统时钟"><a href="#五、系统时钟" class="headerlink" title="五、系统时钟"></a>五、系统时钟</h1><p><img src="/post/72083c9f/image-20250502194314070.png" alt="image-20250502194314070"></p>
+<p>每个Arm核都有4个私有定时器，每个定时器都有一个比较寄存器、一个定时寄存器、一个控制寄存器，所以一共应该有12个寄存器可以操作，将它们的命名总结如下：</p>
+<p><img src="/post/72083c9f/image-20250502194329209.png" alt="image-20250502194329209"></p>
+<p><img src="/post/72083c9f/image-20250502194334960.png" alt="image-20250502194334960"></p>
+<p>这7个timer 的”值”都来源自2个counter</p>
+<p>•    cntpct_el0，是Physical Count register； cntp，cnthp 基于cntpct_el0</p>
+<p>•    cntvct_el0，也就是Virtual Count register；cntv，cnthv 基于cntvct_el0</p>
+<p>其实cntvct_el0 和cntpct_el0也是有关系的，取决于hypervisor的配置:</p>
+<p>•    cntvct_el0 &#x3D; cntpct_el0 - cntvoff_el2</p>
+<p>•    或者cntvct_el0 &#x3D; cntpct_el0</p>
+<p>•    当然如果硬件没有实现EL2，cntvct_el0 自然也是等于 cntpct_el0</p>
+<p>可以把cntpct_el0&#x2F;cntvct_el0理解为一个递增的时钟滴答，但他不提供任何定时、中断、enable&#x2F;disable 等功能，提供这些功能的是上面7个Timer。</p>
+<p>每个timer都有一组配套的寄存器：（以cnthp为例）</p>
+<p>1、timer value寄存器：cnthp_tval_el2</p>
+<p>2、compare value寄存器：cnthp_cval_el2</p>
+<p>3、控制寄存器：cnthp_ctl_el2</p>
+<p>timer触发条件：</p>
+<p>物理计数器（对于cnthp是：cntpct_el0) - compare value(对于cnthp是:cnthp_cval_el2) &gt;&#x3D; 0</p>
+<h1 id="六、ATF编译及启动流程"><a href="#六、ATF编译及启动流程" class="headerlink" title="六、ATF编译及启动流程"></a>六、ATF编译及启动流程</h1><p>​	<img src="/post/72083c9f/1716969438619-d414fe00-f9f7-4507-9efb-10c553bd5308.png" alt="img"></p>
+<h2 id="1、Uboot下载及编译"><a href="#1、Uboot下载及编译" class="headerlink" title="1、Uboot下载及编译"></a>1、Uboot下载及编译</h2><p>可以去官网下载（<a target="_blank" rel="noopener" href="https://u-boot.readthedocs.io/en/latest/%EF%BC%89">https://u-boot.readthedocs.io/en/latest/）</a></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">wget https://ftp.denx.de/pub/u-boot/u-boot-2023.01.tar.bz2</span><br><span class="line"></span><br><span class="line">bzip2 -d u-boot-2023.01.tar.bz2</span><br><span class="line"></span><br><span class="line">tar xf u-boot-2023.01.tar</span><br></pre></td></tr></table></figure>
+
+<p>也可以直接github下载：</p>
+<p>git clone <a target="_blank" rel="noopener" href="https://github.com/u-boot/u-boot">https://github.com/u-boot/u-boot</a></p>
+<p>编译过程中可能会提示报错“missing separator.stop:” 多半是因为make版本不够高所致，提前升级好make的版本。</p>
+<p>编译过程可能出现：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">tools/mkeficapsule.c:20:10: fatal error: gnutls/gnutls.h: No such file or directory</span><br><span class="line"></span><br><span class="line">20 | #include &lt;gnutls/gnutls.h&gt;</span><br><span class="line"></span><br><span class="line">| ^~~~~~~~~~~~~~~~~</span><br><span class="line"></span><br><span class="line">compilation terminated.</span><br><span class="line"></span><br><span class="line">make[1]: *** [scripts/Makefile.host:112: tools/mkeficapsule.o] Error 1</span><br></pre></td></tr></table></figure>
+
+<p>那么需要安装对应的头文件：</p>
+<p>sudo apt-get install libgnutls28-dev</p>
+<p>u-boot-2023.01&#x2F;configs中有可选的配置文件：(qemu_arm64_defconfig中添加CONFIG_SEMIHOSTING&#x3D;y，这样uboot可以semihosting方式加载内核和dtb)</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">make ARCH=arm64 CROSS_COMPILE=aarch64-none-linux-gnu- qemu_arm64_defconfig</span><br><span class="line"></span><br><span class="line">make CROSS_COMPILE=aarch64-none-linux-gnu- all</span><br></pre></td></tr></table></figure>
+
+<p>编译产物在当前目录下:</p>
+<p><img src="/post/72083c9f/1740994714344-341bc9fd-d6f5-4547-8ae6-cf7808b6f8f4.png" alt="img"></p>
+<blockquote>
+<p>这个 Semihosting 功能颇有用处：他能够让 bare-metal 的 ARM 设备通过拦截指定的 SVC 指令，在连操作系统都没有的环境中实现 POSIX 中的许多标准函数，比如 printf、scanf、open、read、write 等等。这些 IO 操作将被 Semihosting 协议转发到 Host 主机上，然后由主机代为执行，所以在 ARM 模拟器中执行一个 printf 可以直接打印到 Host 主机上的终端窗口中；在 ARM 模拟器中写一个文件可以直接写到 Host 主机的当前目录下，等等。</p>
+</blockquote>
+<h2 id="二、ATF下载及编译"><a href="#二、ATF下载及编译" class="headerlink" title="二、ATF下载及编译"></a>二、ATF下载及编译</h2><p>修改plat&#x2F;qemu&#x2F;qemu&#x2F;platform.mk，将GIC版本变更为GICv3。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git clone https://git.trustedfirmware.org/TF-A/trusted-firmware-a.git</span><br><span class="line"></span><br><span class="line">cd trusted-firmware-a</span><br><span class="line"></span><br><span class="line">make CROSS_COMPILE=aarch64-none-linux-gnu- PLAT=qemu ARCH=aarch64 QEMU_USE_GIC_DRIVER=QEMU_GICV3 BL33=../images_new/u-boot.bin all fip DEBUG=1 EL3_EXCEPTION_HANDLING=1 SDEI_SUPPORT=1</span><br></pre></td></tr></table></figure>
+
+<p>git clone <a target="_blank" rel="noopener" href="https://git.trustedfirmware.org/TF-A/trusted-firmware-a.git">https://git.trustedfirmware.org/TF-A/trusted-firmware-a.git</a></p>
+<p>具体编译选项可以参考trusted-firmware-a&#x2F;plat&#x2F;qemu&#x2F;qemu&#x2F;platform.mk文件。</p>
+<blockquote>
+<p>Built fiptool successfully</p>
+<p>Trusted Boot Firmware BL2: offset&#x3D;0xB0, size&#x3D;0x8201, cmdline&#x3D;”–tb-fw”</p>
+<p>EL3 Runtime Firmware BL31: offset&#x3D;0x82B1, size&#x3D;0xB094, cmdline&#x3D;”–soc-fw”</p>
+<p>Non-Trusted Firmware BL33: offset&#x3D;0x13345, size&#x3D;0xE8658, cmdline&#x3D;”–nt-fw”</p>
+<p>Built &#x2F;workspace&#x2F;ARM64_ATF&#x2F;ATF&#x2F;build&#x2F;qemu&#x2F;debug&#x2F;fip.bin successfully</p>
+</blockquote>
+<p>目前只增加了BL33（uboot或者uefi），后续如果有TEE OS的话可以添加进BL32。</p>
+<p>编译产物在trusted-firmware-a&#x2F;build&#x2F;qemu&#x2F;debug中，此处我们有用的是bl1.bin和fip.bin两个文件：</p>
+<p><img src="/post/72083c9f/1740994763347-31b64d23-58b7-48a6-9a8b-a323a2a27b33.png" alt="img"></p>
+<p>qemu中正常使用fip的方式加载，所以在编译时加入fip参数。如果只是加载bl1.bin时：</p>
+<p><img src="/post/72083c9f/1716970282495-b25f9388-8fe9-433c-b912-8c890f16e315.png" alt="img"></p>
+<ul>
+<li>加入fip参数，会将bl2，bl31，bl33打包成一个fip.bin。在输出产物中有一个<strong>qemu_fw.bios</strong>，该文件就已经将bl1.bin + fip.bin进行再次打包，所以替代原有的dd方式制作包：</li>
+</ul>
+<blockquote>
+<p>这时我们可以继续将bl1.bin和fip.bin存放在一个bios.bin文件中提供给qemu的-bios参数加载，制作可启动的flash文件：</p>
+<p>dd if&#x3D;bl1.bin of&#x3D;bios.bin bs&#x3D;4096 conv&#x3D;notrunc</p>
+<p>dd if&#x3D;fip.bin of&#x3D;bios.bin bs&#x3D;4096 seek&#x3D;64 conv&#x3D;notrunc </p>
+</blockquote>
+<p>得到的bios.bin（qemu_fw.bios）可以直接启动，BL1-&gt; BL2-&gt;BL3-&gt;BL33(uboot)</p>
+<p><img src="/post/72083c9f/1741002344926-81056755-d18b-4e53-848c-3ecc3d81ae2c.png" alt="img"></p>
+<h2 id="三、内核编译"><a href="#三、内核编译" class="headerlink" title="三、内核编译"></a>三、内核编译</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">1、make ARCH=arm64 CROSS_COMPILE=aarch64-none-linux-gnu- defconfig</span><br><span class="line"></span><br><span class="line">2、make ARCH=arm64 CROSS_COMPILE=aarch64-none-linux-gnu- menuconfig 添加一个100MB的ramblock作为initramfs</span><br><span class="line"></span><br><span class="line">3、make ARCH=arm64 CROSS_COMPILE=aarch64-none-linux-gnu- savedefconfig 保存配置</span><br><span class="line"></span><br><span class="line">4、make ARCH=arm64 CROSS_COMPILE=aarch64-none-linux-gnu- -j12 编译内核</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="四、文件系统编译"><a href="#四、文件系统编译" class="headerlink" title="四、文件系统编译"></a>四、文件系统编译</h2><h3 id="方式一：使用buildroot"><a href="#方式一：使用buildroot" class="headerlink" title="方式一：使用buildroot"></a>方式一：使用buildroot</h3><p><a target="_blank" rel="noopener" href="https://buildroot.org/download.html%E4%B8%8B%E8%BD%BD%E5%90%8E%E8%A7%A3%E5%8E%8B%E6%88%96%E8%80%85%EF%BC%9A">https://buildroot.org/download.html下载后解压或者：</a></p>
+<p>git clone git:&#x2F;&#x2F;git.buildroot.net&#x2F;buildroot</p>
+<h3 id="方式二：使用mkimg制作"><a href="#方式二：使用mkimg制作" class="headerlink" title="方式二：使用mkimg制作"></a>方式二：使用mkimg制作</h3><h2 id="五、在Qemu中启动"><a href="#五、在Qemu中启动" class="headerlink" title="五、在Qemu中启动"></a>五、在Qemu中启动</h2><h3 id="网络配置"><a href="#网络配置" class="headerlink" title="网络配置"></a>网络配置</h3><p>主机安装brctl和tunctl，并通过桥接的方式配置tap接口：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">brctl addbr br0</span><br><span class="line">ip addr flush dev ens33</span><br><span class="line">brctl addif br0 ens33</span><br><span class="line">tunctl -t tap0 -u `whoami`</span><br><span class="line">brctl addif br0 tap0</span><br><span class="line">ifconfig ens33 up</span><br><span class="line">ifconfig tap0 up</span><br><span class="line">ifconfig br0 up</span><br><span class="line">ifconfig ens33 192.168.136.135</span><br><span class="line">ifconfig br0 192.168.136.110</span><br><span class="line">ifconfig tap0 192.168.136.115</span><br></pre></td></tr></table></figure>
+
+<h2 id="使用uboot启动"><a href="#使用uboot启动" class="headerlink" title="使用uboot启动"></a>使用uboot启动</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qemu-system-aarch64 -M virt -cpu cortex-a53 -smp 2 -m 2048M -kernel ./u-boot -nographic</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="直接启动kernel"><a href="#直接启动kernel" class="headerlink" title="直接启动kernel"></a>直接启动kernel</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qemu-system-aarch64 -machine virt,gic-version=3,virtualization=off -m 4G -smp 4 --cpu cortex-a72 -kernel ./Image -initrd ./svr_image.gz --append &quot;console=ttyAMA0,115200 init=/linuxrc rw&quot; --nographic</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="使用ATF启动"><a href="#使用ATF启动" class="headerlink" title="使用ATF启动"></a>使用ATF启动</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qemu-system-aarch64 -nographic -machine virt,secure=on,gic_version=3 -m 4G -smp 4 --cpu cortex-a72 -bios ./bios.bin</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="六、在uboot中调试"><a href="#六、在uboot中调试" class="headerlink" title="六、在uboot中调试"></a>六、在uboot中调试</h2><h3 id="查看fdt"><a href="#查看fdt" class="headerlink" title="查看fdt"></a>查看fdt</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line">=&gt; bdinfo</span><br><span class="line"></span><br><span class="line">boot_params = 0x0000000000000000</span><br><span class="line"></span><br><span class="line">DRAM bank = 0x0000000000000000</span><br><span class="line"></span><br><span class="line">-&gt; start = 0x0000000040000000</span><br><span class="line"></span><br><span class="line">-&gt; size = 0x0000000100000000</span><br><span class="line"></span><br><span class="line">flashstart = 0x0000000004000000</span><br><span class="line"></span><br><span class="line">flashsize = 0x0000000002000000</span><br><span class="line"></span><br><span class="line">flashoffset = 0x00000000000e8658</span><br><span class="line"></span><br><span class="line">baudrate = 115200 bps</span><br><span class="line"></span><br><span class="line">relocaddr = 0x000000013fefb000</span><br><span class="line"></span><br><span class="line">reloc off = 0x000000013fefb000</span><br><span class="line"></span><br><span class="line">Build = 64-bit</span><br><span class="line"></span><br><span class="line">current eth = virtio-net#32</span><br><span class="line"></span><br><span class="line">ethaddr = 52:52:52:52:52:52</span><br><span class="line"></span><br><span class="line">IP addr = &lt;NULL&gt;</span><br><span class="line"></span><br><span class="line">fdt_blob = 0x000000013eeb8c50</span><br><span class="line"></span><br><span class="line">new_fdt = 0x000000013eeb8c50</span><br><span class="line"></span><br><span class="line">fdt_size = 0x0000000000002160</span><br><span class="line"></span><br><span class="line">lmb_dump_all:</span><br><span class="line"></span><br><span class="line">memory.cnt = 0x1</span><br><span class="line"></span><br><span class="line">memory[0] [0x40000000-0x13fffffff], 0x100000000 bytes flags: 0</span><br><span class="line"></span><br><span class="line">reserved.cnt = 0x2</span><br><span class="line"></span><br><span class="line">reserved[0] [0x13deb4000-0x13fffffff], 0x0214c000 bytes flags: 0</span><br><span class="line"></span><br><span class="line">reserved[1] [0x13eeb47d0-0x13fffffff], 0x0114b830 bytes flags: 0</span><br><span class="line"></span><br><span class="line">devicetree = board</span><br><span class="line"></span><br><span class="line">arch_number = 0x0000000000000000</span><br><span class="line"></span><br><span class="line">TLB addr = 0x000000013fff0000</span><br><span class="line"></span><br><span class="line">irq_sp = 0x000000013eeb8c40</span><br><span class="line"></span><br><span class="line">sp start = 0x000000013eeb8c40</span><br><span class="line"></span><br><span class="line">Early malloc usage: 3a8 / 2000</span><br><span class="line"></span><br><span class="line">=&gt; </span><br></pre></td></tr></table></figure>
+
+
+
+<p>从上图中可以查看到fdt的地址：（fdt_blob &#x3D; 0x000000013eeb8c50）</p>
+<p>查看fdt中内容：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">=&gt; fdt addr 0x000000013eeb8c50</span><br><span class="line"></span><br><span class="line">Working FDT set to 13eeb8c50</span><br><span class="line"></span><br><span class="line">=&gt; fdt list </span><br><span class="line"></span><br><span class="line">/ &#123;</span><br><span class="line"></span><br><span class="line">interrupt-parent = &lt;0x00008005&gt;;</span><br><span class="line"></span><br><span class="line">\#size-cells = &lt;0x00000002&gt;;</span><br><span class="line"></span><br><span class="line">\#address-cells = &lt;0x00000002&gt;;</span><br><span class="line"></span><br><span class="line">compatible = &quot;linux,dummy-virt&quot;;</span><br><span class="line"></span><br><span class="line">psci &#123;</span><br><span class="line"></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/post/72083c9f/1675768537091-3ba70fba-d544-45a8-978f-a0c5f0dc29b7.png" alt="img"></p>
+<p><img src="/post/72083c9f/1675768614550-c937897c-41ec-4e34-b7aa-0ac375c1cb1c.png" alt="img"></p>
+<p>从中可以找到一个flash0，这个也就是可以用来放kernel和rootfs的，从而我们可以修改uboot的默认启动bootcmd，然后通过qemu把这个flash带进去。</p>
+<p>通过qemu导出dts：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qemu-system-arm -M virt,dumpdtb=virt.dtb</span><br></pre></td></tr></table></figure>
+
+<p>然后通过dtc工具转化成dts：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dtc -I dtb -O dts -o output.dts input.dtb</span><br></pre></td></tr></table></figure>
+
+<p>那么此处为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dtc -I dtb -O dts -o platform.dts platform.dtb</span><br></pre></td></tr></table></figure>
+
+<p>即可查看设备树信息了</p>
+<p><img src="/post/72083c9f/1741058648634-0b86d2bb-988a-4587-ae40-15ca3dde6455.png" alt="img"></p>
+<h2 id="制作启动镜像"><a href="#制作启动镜像" class="headerlink" title="制作启动镜像"></a>制作启动镜像</h2><h3 id="方式一：使用flash（可选）"><a href="#方式一：使用flash（可选）" class="headerlink" title="方式一：使用flash（可选）"></a>方式一：使用flash（可选）</h3><p>创建一个64MB的flash文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dd if=/dev/zero of=flash.bin bs=4096 count=16384</span><br></pre></td></tr></table></figure>
+
+<p>由于UBOOT ENV的大小为0x40000 （262140），所以Image可以放在Flash0 start addr + 0x40000的位置，即0x04040000。</p>
+<blockquote>
+<p>-rw-r–r– 1 lb329731 users 18706944 Feb 7 11:54 Image</p>
+</blockquote>
+<p>那么我们到时候直接拷贝0x2000000即可。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dd if=Image of=flash.bin bs=4096 seek=64 conv=notrunc</span><br></pre></td></tr></table></figure>
+
+
+
+<p>原先的启动模式：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">boot_targets=qfw usb0 scsi0 virtio0 nvme0 dhcp</span><br><span class="line"></span><br><span class="line">bootcmd=run distro_bootcmd</span><br><span class="line"></span><br><span class="line">distro_bootcmd=scsi_need_init=; setenv nvme_need_init; virtio_need_init=; for target in $&#123;boot_targets&#125;; do run bootcmd_$&#123;target&#125;; done</span><br></pre></td></tr></table></figure>
+
+
+
+<p>创建一个flash启动的bootcmd：</p>
+<p><img src="/post/72083c9f/1675769807289-856d5b0d-e781-4f8b-8ad5-81b403502046.png" alt="img"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">setenv boot_targets $&#123;boot_targets&#125; flash</span><br><span class="line"></span><br><span class="line">setenv bootcmd_flash &quot;cp.b 0x04040000 0x43000000 0x2000000; booti 0x43000000 - 0x&#123;fdtcontroladdr&#125;&quot;</span><br><span class="line"></span><br><span class="line">qemu-system-aarch64 -nographic -machine virt,secure=on,gic_version=3 -m 4G -smp 4 --cpu cortex-a72 -bios ./bios.bin -drive if=pflash,format=raw,index=1,file=flash.bin</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="方式二：使用qemu参数传递"><a href="#方式二：使用qemu参数传递" class="headerlink" title="方式二：使用qemu参数传递"></a>方式二：使用qemu参数传递</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qemu-system-aarch64 -nographic -machine virt,secure=on,gic_version=3 -m 4G -smp 4 --cpu cortex-a72 -bios ./bios.bin -kernel ./Image -initrd ./svr_image.gz --append &quot;console=ttyAMA0,115200 init=/linuxrc rw&quot;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="保存qemu-启动配置-不太好使？"><a href="#保存qemu-启动配置-不太好使？" class="headerlink" title="保存qemu 启动配置(不太好使？)"></a>保存qemu 启动配置(不太好使？)</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qemu-system-aarch64 -nographic -machine virt,secure=on,gic_version=3 -m 4G -smp 4 --cpu cortex-a72 -bios ./bios.bin -kernel ./Image -initrd ./svr_image.gz --append &quot;console=ttyAMA0,115200 init=/linuxrc rw&quot; -writeconfig qemu-atf.conf</span><br></pre></td></tr></table></figure>
+
+
+
+<p>下次启动直接：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">qemu-system-aarch64 –readconfig qemu-atf.conf</span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>参考文档：Open Portable Trusted Execution Enveiroment OS. [<a target="_blank" rel="noopener" href="https://github.com/OP-TEE">OP-TEE</a>] [<a target="_blank" rel="noopener" href="https://optee.readthedocs.io/en/latest/">官方文档</a>]</li>
+</ul>
+<h1 id="七、特殊指令说明"><a href="#七、特殊指令说明" class="headerlink" title="七、特殊指令说明"></a>七、特殊指令说明</h1><h2 id="关于跳转指令"><a href="#关于跳转指令" class="headerlink" title="关于跳转指令"></a>关于跳转指令</h2><p><img src="/post/72083c9f/image-20250502192124682.png" alt="image-20250502192124682"></p>
+<h2 id="ldr指令与ldr伪指令（带-号的）："><a href="#ldr指令与ldr伪指令（带-号的）：" class="headerlink" title="ldr指令与ldr伪指令（带&#x3D;号的）："></a>ldr指令与ldr伪指令（带&#x3D;号的）：</h2><p><img src="/post/72083c9f/image-20250502193739253.png" alt="image-20250502193739253"></p>
+<h2 id="pre-index-post-index。"><a href="#pre-index-post-index。" class="headerlink" title="pre-index&#x2F;post-index。"></a>pre-index&#x2F;post-index。</h2><p>pre-index是先修改基址寄存器，然后再访问内存。</p>
+<p>post-index则是先访问内存，再修改基址寄存器。后变基经常用来出栈。该指令用于从当前SP位置开始加载值到寄存器，然后将SP进行偏移。 </p>
+<p>•    stp x1, x0, [sp, #-16]!</p>
+<p>1、sp’ &#x3D; sp - 16</p>
+<p>2、将 x1 填入 sp’ 位置，将 x0 填入 sp’ + 8 位置</p>
+<p>•    ldp x29, x28, [sp], #16</p>
+<p>1、将 sp 位置处读取8字节到x29，将 sp + 8位置处读取8字节到x28</p>
+<p>2、sp’ &#x3D; sp + 16</p>
+<p>上述两个示例，stp&#x2F;ldp能同时操作两个寄存器，应该是不存在中间步骤（sp+8 或者 sp-8</p>
+<h2 id="CurrentEL说明"><a href="#CurrentEL说明" class="headerlink" title="CurrentEL说明"></a>CurrentEL说明</h2><p><img src="/post/72083c9f/image-20250502194211034.png" alt="image-20250502194211034"></p>
+<p>PSTATE.EL字段保存当前PE的异常等级，但复位时该字段表示系统所支持的最高的异常等级，大致需要从最高异常等级开始初始化。</p>
+<p>而CurrentEL表示当前的异常等级，其逻辑也是获取PSTATE.EL字段。即复位后表示当前系统能支持的最高异常等级，CurrentEL表示当前的异常等级。可以读该寄存器来获取当前所处等级。</p>
+<p><img src="/post/72083c9f/image-20250502194223604.png" alt="image-20250502194223604"></p>
+<h2 id="VHE说明"><a href="#VHE说明" class="headerlink" title="VHE说明"></a>VHE说明</h2><p>在HCR.E2H配置下，可以使能VHE功能，但是前提是设备支持VHE（***When FEAT_VHE is implemented***），但是在Linux中的启动流程中：</p>
+<p>1、在head.S的init_el2中，先统一关闭VHE功能</p>
+<p>2、然后在启动的最后阶段__primary_switched —&gt; finalise_el2 会再判断是否进入VHE，即EL2启动</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+<script src="https://sdk.jinrishici.com/v2/browser/jinrishici.js" charset="utf-8"></script>
+<script>
+  jinrishici.load((result) => {
+    let jrsc = document.getElementById('jrsc');
+    const data = result.data;
+    let author = data.origin.author;
+    let title = '《' + data.origin.title + '》';
+    let content = data.content.substr(0, data.content.length - 1);
+    let dynasty = data.origin.dynasty.substr(0, data.origin.dynasty.length - 1);
+    jrsc.innerText = content + ' @ ' + dynasty + '·' + author + title;
+  });
+</script>
+<div style="text-align: center"><span id="jrsc" >正在加载今日诗词....</span></div>
+
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/7d4db06d" rel="prev" title="Cortex-M7架构">
+                  <i class="fa fa-angle-left"></i> Cortex-M7架构
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Liu Bing</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">20k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:13</span>
+  </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>
